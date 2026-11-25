@@ -1,9 +1,9 @@
 # Host facts needed from the human (before the first real deploy)
 
-**Answered 2026-10-30 — §1, §2 and §3 below are confirmed, §5 is
-deliberately skipped, and §4 (SSH access) is the only one still open.**
-The rebuild is code-complete (Phases 0–14) and the user is readying the
-first real deploy, so this file is no longer deferred.
+**Re-checked 2026-11-25 for the Juliet's Zeal host (`julietsz`, bdix13).**
+§1–§4 below are confirmed from output the owner pasted; the only open items
+are the GitHub secrets themselves. (This file started life answering the same
+questions for the UniBaazar host; the values below are the new host's.)
 
 I can't connect to the production server or run anything on it myself (the
 master plan forbids this). The CI/CD pipeline this phase builds is written to
@@ -14,25 +14,21 @@ output back. Nothing here is destructive — these are all read-only checks.
 
 ## 1. OpenSSL version (determines Prisma's binary target) — ✅ answered
 
-`/etc/os-release` doesn't exist on this host (cPanel's CageFS jail hides
-it on many shared-hosting setups), but `uname -a` gave an `el9` kernel
-tag and `/opt/alt/alt-nodejs20` exists — CloudLinux's own naming
-convention. Confirmed: **CloudLinux 9 (RHEL-family), OpenSSL 3.5.8**.
-
-`binaryTargets = ["native", "rhel-openssl-3.0.x"]` is now set in
-`prisma/schema.prisma` — see
-`docs/decisions/0026-prisma-binary-target-rhel.md`. Prisma groups engine
-binaries by OpenSSL major version, so 3.5.8 maps onto the same
-`rhel-openssl-3.0.x` target as any other OpenSSL 3.x release.
+`openssl version` → **OpenSSL 3.5.9**. `/etc/os-release` is hidden by
+cPanel's CageFS jail, but the disk is `almalinux-root` and CloudLinux's
+`alt-nodejs*` stack and `cloudlinux-selector` are present, so this is a
+CloudLinux 9 (RHEL-family) host like the UniBaazar one.
+`binaryTargets = ["native", "rhel-openssl-3.0.x"]` in `prisma/schema.prisma`
+already covers it — Prisma groups engines by OpenSSL major version, so 3.5.9
+maps to the same `rhel-openssl-3.0.x` target (see
+`docs/decisions/0026-prisma-binary-target-rhel.md`).
 
 ## 2. Node.js version available via Node Selector — ✅ answered
 
-`alt-nodejs20` is available via CloudLinux's alt-stack, matching
-`.nvmrc`'s Node 20. Confirm it's also selectable from cPanel's **Setup
-Node.js App** version dropdown when creating the app (§6 below) — the
-alt-stack listing and the Node Selector UI should agree, but there's no
-harm double-checking at that step since it's a dropdown, not a typed
-answer.
+`/opt/alt` lists `alt-nodejs20`, `22`, `24` and `26` (plus older ones), and
+`/usr/sbin/cloudlinux-selector` exists. Use **20.x**, matching `.nvmrc` and
+CI. The cPanel dropdown should agree; double-check it when creating the app
+(§6 of `DEPLOYMENT.md`).
 
 ## 3. Your home directory and app path — ✅ answered
 
@@ -41,31 +37,19 @@ MariaDB 11.4, shared IP 115.187.19.26). `APP_PATH` is
 therefore `/home/julietsz/julietszeal`, used as-is in `DEPLOYMENT.md` and
 `docs/launch-checklist.md`.
 
-## 4. SSH access for GitHub Actions — still open
+## 4. SSH access for GitHub Actions — ✅ key authorized; secrets pending
 
-The deploy workflow (`.github/workflows/deploy.yml`) connects over SSH to
-upload the build and run the switch-over script. This needs:
+SSH Access is enabled on the plan. The key `github-deploy` was generated in
+cPanel → _Security_ → _SSH Access_ → _Manage SSH Keys_ and authorized:
+`~/.ssh/authorized_keys` and `github-deploy.pub` are both present. A
+passphrase is required on this host, so the GitHub secret `SSH_PASSPHRASE` is
+needed as well as `SSH_KEY`. The private key and passphrase go directly into
+GitHub's secrets UI (see `docs/deploy/github-secrets.md`) and are never
+pasted into chat. Port 22 is assumed unless cPanel's SSH Access page shows
+another.
 
-1. Your cPanel plan to support **SSH Access** (cPanel → _Security_ → _SSH
-   Access_). Some shared hosting plans disable this — check it's enabled.
-2. A dedicated SSH key pair for GitHub Actions (don't reuse your personal
-   key): cPanel → _Security_ → _SSH Access_ → _Manage SSH Keys_ →
-   _Generate a New Key_. Try leaving the passphrase blank — on this host
-   that form refused it ("Password strength must be at least 65"), so a
-   real passphrase was set instead. Both `deploy.yml`'s actions accept
-   one via the `SSH_PASSPHRASE` secret (added in this phase), so a
-   forced passphrase isn't a blocker, just one more secret to set. Click
-   **Authorize** to add the public key to `~/.ssh/authorized_keys`.
-3. The **private** key's contents (Manage Keys → click the key → _View/Download_
-   → copy the private key, `-----BEGIN ... PRIVATE KEY-----` through
-   `-----END ... PRIVATE KEY-----`) go into the GitHub secret `SSH_KEY`,
-   and the passphrase (if one was required) into `SSH_PASSPHRASE` — see
-   `docs/deploy/github-secrets.md`. Never paste either into chat with
-   me; add both directly in GitHub's UI.
-4. Confirm: is SSH on the standard port 22, or a non-standard port? (cPanel
-   → SSH Access page shows this, or `cat /etc/ssh/sshd_config | grep -i port`
-   if you have terminal access to check — may require root, skip if you
-   can't.)
+Also confirmed on this host: `tar`, `mysql` and `mysqldump` exist (MariaDB
+client 11.4.14), `bash` is present, and the home volume has ~3 TB free.
 
 If your plan doesn't support SSH access at all, tell me — there's a
 documented fallback (cPanel's Git Version Control deploy, §3.4 of the master
