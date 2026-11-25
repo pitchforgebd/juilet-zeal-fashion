@@ -30,23 +30,25 @@ test("settings parity: changing the site name updates the storefront header", as
   await expect(page.getByText(uniqueName).first()).toBeVisible({ timeout: 10_000 });
 });
 
-test("menus parity: adding a header menu item shows up in the public menu API", async ({
+test("menus parity: a link added to a footer menu shows up in the storefront footer", async ({
   page,
 }) => {
+  // Only the footer reads admin menus (header and mobile menus are built from
+  // categories) — see docs/decisions/0040-admin-storefront-parity.md.
   const uniqueLabel = `Parity Link ${Date.now()}`;
 
   await page.goto("/admin/content/menus", { waitUntil: "networkidle" });
-  await page.getByLabel("Menu").selectOption("header");
+  await page.getByLabel("Menu").selectOption("footer-service");
   await page.getByLabel("Label").fill(uniqueLabel);
   await page.getByLabel("Link").fill("/parity-test-link");
   await page.getByRole("button", { name: "Save link" }).click();
   await expectSaved(page);
 
-  const response = await page.request.get("/api/v1/menus/header");
-  expect(response.ok()).toBe(true);
-  const body = await response.json();
-  const labels = JSON.stringify(body);
-  expect(labels).toContain(uniqueLabel);
+  // The save revalidates the storefront, so the very next load shows it.
+  await page.goto("/", { waitUntil: "networkidle" });
+  await expect(
+    page.locator("footer").getByRole("link", { name: uniqueLabel }),
+  ).toHaveAttribute("href", /\/parity-test-link$/);
 });
 
 test("products parity: a quick-edited price shows up on the product page", async ({
@@ -92,13 +94,13 @@ test("theme parity: changing the top bar color recolors the storefront top bar",
   // Restore the shipped default, for the same reason the checkout test
   // below restores COD. A random top bar colour is almost never
   // AA-contrast-safe against the white text TopBar.tsx renders on it
-  // (themeDefaults' #C94607 is chosen to be — see
+  // (themeDefaults' #0C0B0B is chosen to be — see
   // src/server/settings/store.ts), so leaving it behind made
   // `npm run test:a11y` fail on every page for every run after this
   // one. That cost real debugging time in Phases 9, 10 and 11 before
   // Phase 12's repeatable-regression work tracked it back to here.
   await page.goto("/admin/settings/theme", { waitUntil: "networkidle" });
-  await page.getByLabel("Top bar color").fill("#C94607");
+  await page.getByLabel("Top bar color").fill("#0C0B0B");
   await page.getByRole("button", { name: "Save" }).click();
   await expectSaved(page);
 });
@@ -111,15 +113,20 @@ test("checkout parity: disabling cash on delivery hides it from the storefront c
   await page.getByRole("button", { name: "Save" }).click();
   await expectSaved(page);
 
-  await page.goto("/checkout", { waitUntil: "networkidle" });
-  await expect(page.getByText("Cash on delivery")).toHaveCount(0);
-
-  // Restore: a disabled COD option would otherwise silently affect any
-  // other suite's checkout flow for the rest of this test DB's life.
-  await page.goto("/admin/settings/checkout", { waitUntil: "networkidle" });
-  await page.getByLabel("Allow cash on delivery").check();
-  await page.getByRole("button", { name: "Save" }).click();
-  await expectSaved(page);
+  try {
+    await page.goto("/checkout", { waitUntil: "networkidle" });
+    // Scoped to the page body: the footer legitimately lists "Cash on
+    // delivery" among accepted payments.
+    await expect(page.locator("main").getByText("Cash on delivery")).toHaveCount(0);
+  } finally {
+    // Restore even when the check fails: a disabled COD option would
+    // otherwise silently break every later checkout test (it did — the
+    // tracking suite's purchase test failed in a cascade).
+    await page.goto("/admin/settings/checkout", { waitUntil: "networkidle" });
+    await page.getByLabel("Allow cash on delivery").check();
+    await page.getByRole("button", { name: "Save" }).click();
+    await expectSaved(page);
+  }
 });
 
 test("social parity: changing the Facebook URL updates the storefront footer link", async ({
