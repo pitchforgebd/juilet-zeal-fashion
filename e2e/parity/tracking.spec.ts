@@ -9,7 +9,7 @@ import { expect, expectSaved, test } from "./admin-session";
 // the single `tracking` setting.
 test.describe.configure({ mode: "serial" });
 
-const PRODUCT = "/product/kids-school-bag";
+const PRODUCT = "/product/girls-tiered-frock";
 
 const fields: Record<string, string> = {
   "Meta pixel ID": "123456789012345",
@@ -255,8 +255,8 @@ test("Google loads under denied consent; other pixels wait for Accept", async ({
     expect(view.ecommerce.items[0]).toEqual(
       expect.objectContaining({
         item_id: expect.any(String),
-        item_name: "Kids School Bag",
-        affiliation: "UniBaazar",
+        item_name: "Girls' Tiered Frock",
+        affiliation: "Juliet's Zeal",
         item_category: expect.any(String),
         price: expect.any(Number),
         quantity: 1,

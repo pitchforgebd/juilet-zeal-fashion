@@ -1,8 +1,41 @@
 import { readConsent, track } from "@/lib/tracking/browser";
 import { purchaseCustomer } from "@/lib/tracking/customer";
+import { purchaseItems, type TrackItem } from "@/lib/tracking/ecommerce";
 import type { Order } from "@/types/catalog";
 
 const trackedKey = "unibaazar:tracked-orders";
+const itemsKey = "unibaazar:purchase-items";
+
+type RememberedItems = Record<string, TrackItem[]>;
+
+function readRemembered(): RememberedItems {
+  try {
+    const raw = window.localStorage.getItem(itemsKey);
+    const parsed: unknown = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as RememberedItems)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+/**
+ * Called at checkout with the fully-described items (brand, categories,
+ * variant) so the purchase event can report them — possibly on a later page
+ * load, after a payment-gateway round trip. Keeps the last 20 orders.
+ */
+export function rememberPurchaseItems(orderId: string, items: TrackItem[]): void {
+  try {
+    const kept = Object.entries(readRemembered()).slice(-19);
+    window.localStorage.setItem(
+      itemsKey,
+      JSON.stringify(Object.fromEntries([...kept, [orderId, items]])),
+    );
+  } catch {
+    // Storage full or blocked: purchase still fires, just without categories.
+  }
+}
 
 function alreadyTracked(id: string): boolean {
   try {
@@ -36,12 +69,7 @@ export async function trackPurchase(order: Order): Promise<void> {
       coupon: order.couponCode,
       paymentType: order.paymentMethod,
       customer,
-      items: order.items.map((item) => ({
-        id: item.sku,
-        name: item.name,
-        price: item.unitPrice,
-        quantity: item.qty,
-      })),
+      items: purchaseItems(order.items, readRemembered()[order.id]),
     },
     order.id,
   );

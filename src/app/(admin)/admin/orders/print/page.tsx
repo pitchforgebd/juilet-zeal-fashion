@@ -45,7 +45,7 @@ export default async function PrintOrdersPage({ searchParams }: PrintPageProps) 
         footerNote={invoice.footer}
         vatPercent={invoice.vatPercent}
         signature={invoice.signature}
-        storeName={general.name || "UniBaazar"}
+        storeName={general.name}
         logoUrl={general.logo}
       />
     </div>

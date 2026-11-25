@@ -49,8 +49,11 @@ export async function uploadContentImageAction(
 }
 
 function refresh(): void {
-  revalidatePath("/");
-  revalidatePath("/blog");
+  // Pages, blog, menus (the footer), homepage sections, FAQ, testimonials and
+  // videos all render on the storefront. Its routes live under /[locale], so
+  // a bare revalidatePath("/") matched nothing; invalidating the root layout
+  // refreshes every storefront page (same as settings-actions).
+  revalidatePath("/", "layout");
   revalidatePath("/admin/content");
   revalidatePath("/admin/content/blog");
   revalidatePath("/admin/content/menus");

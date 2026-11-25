@@ -11,8 +11,13 @@ type ProductMediaProps = {
   loading?: "lazy" | "eager";
 };
 
-function svgData(hue: number, letter: string, size: number): string {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect width="${size}" height="${size}" fill="hsl(${hue} 75% 92%)"/><text x="50%" y="56%" text-anchor="middle" font-size="${Math.round(size * 0.28)}" font-family="Poppins,sans-serif" fill="hsl(${hue} 45% 32%)">${letter}</text></svg>`;
+// Placeholder for items without a photo: a plain warm surface step, no
+// initial or pattern, so a missing photo reads as an empty slot rather than
+// decoration. `hue` only nudges the lightness a little so a grid of empty
+// slots doesn't merge into one block.
+function svgData(hue: number, size: number): string {
+  const lightness = 92 + (Math.abs(hue) % 3);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><rect width="${size}" height="${size}" fill="hsl(10 18% ${lightness}%)"/></svg>`;
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 }
 
@@ -24,8 +29,6 @@ export function ProductMedia({
   imgClassName,
   loading = "lazy",
 }: ProductMediaProps) {
-  const letter = name.slice(0, 1);
-
   if (image) {
     return (
       <span className={cn("relative block overflow-hidden", className)}>
@@ -44,14 +47,14 @@ export function ProductMedia({
   return (
     <span className={cn("relative block overflow-hidden", className)}>
       <Image
-        src={svgData(hue, letter, 640)}
+        src={svgData(hue, 640)}
         alt={name}
         width={640}
         height={640}
         unoptimized
         loading={loading}
         placeholder="blur"
-        blurDataURL={svgData(hue, "", 8)}
+        blurDataURL={svgData(hue, 8)}
         className={cn("h-full w-full object-cover", imgClassName)}
       />
     </span>

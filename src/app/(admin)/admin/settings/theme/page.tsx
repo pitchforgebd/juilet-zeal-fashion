@@ -32,7 +32,9 @@ export default async function ThemeSettingsPage() {
             label: "Font",
             kind: "select",
             options: [
-              { value: "poppins", label: "Poppins" },
+              // Stored value stays "poppins" for older saved settings; the
+              // storefront's brand face is Jost (src/app/fonts/index.ts).
+              { value: "poppins", label: "Jost (brand)" },
               { value: "system", label: "System" },
             ],
           },

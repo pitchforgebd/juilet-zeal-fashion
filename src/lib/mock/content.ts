@@ -138,37 +138,42 @@ export const faqs: { question: string; answer: string }[] = [
 
 export const heroSlides = [
   {
-    title: "Flash deals this week",
-    text: "Phones, fashion, and pantry staples with a live countdown.",
+    title: "Dresses, kurtis and tops for the new season",
+    text: "Fluid silhouettes and soft tailoring in breathable fabrics, for every day and every occasion.",
+    href: "/category/women",
+    action: "Shop women",
+    hue: 345,
+  },
+  {
+    title: "Sarees and salwar sets for Eid and weddings",
+    text: "Silk sarees with matching blouse pieces, and three-piece salwar kameez with dupatta.",
+    href: "/category/ethnic",
+    action: "Shop ethnic wear",
+    hue: 330,
+  },
+  {
+    title: "Seasonal pieces, reduced for a few days",
+    text: "The flash sale ends when the timer does.",
     href: "/flash-deals",
-    action: "Shop flash deals",
-    hue: 24,
-  },
-  {
-    title: "Fashion for the season",
-    text: "Panjabis and tees with size and color stock on the product page.",
-    href: "/category/fashion",
-    action: "Browse fashion",
-    hue: 340,
-  },
-  {
-    title: "Home essentials",
-    text: "Appliances with local warranty and clear delivery charges.",
-    href: "/category/home",
-    action: "Shop home",
-    hue: 200,
+    action: "Shop the sale",
+    hue: 350,
   },
 ];
 
 export const sideBanners = [
   {
-    title: "Free delivery over ৳6,500",
-    href: "/shipping-policy",
-    hue: 16,
+    title: "New season arrivals",
+    href: "/shop?sort=newest",
+    hue: 345,
   },
   {
-    title: "Offers on daily essentials",
+    title: "The private sale",
     href: "/offers",
-    hue: 140,
+    hue: 330,
+  },
+  {
+    title: "Free delivery over ৳6,500",
+    href: "/shipping-policy",
+    hue: 350,
   },
 ];

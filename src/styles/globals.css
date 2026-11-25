@@ -3,24 +3,24 @@
 
 @layer base {
   :root {
-    /* Static fallback = the Bazaar preset (src/lib/theme/presets.ts),
+    /* Static fallback = the Juliet preset (src/lib/theme/presets.ts),
      * used as-is by admin (which never re-skins with storefront theme
      * presets — see ARCHITECTURE.md §4.5) and overridden per request on
      * the storefront by the active preset's <style> tag rendered in
      * src/app/[locale]/layout.tsx (see src/lib/theme/styleTag.ts). Keep
-     * these values in sync with THEME_PRESETS.bazaar by hand — there's no
+     * these values in sync with THEME_PRESETS.juliet by hand — there's no
      * build step that generates this block from that file. */
-    --color-primary: 170 59 6;
-    --color-primary-dark: 163 56 5;
-    --color-primary-light: 255 240 232;
-    --color-accent: 209 18 59;
-    --color-ink: 0 0 0;
-    --color-page: 245 245 245;
+    --color-primary: 21 19 20;
+    --color-primary-dark: 0 0 0;
+    --color-primary-light: 243 228 231;
+    --color-accent: 156 74 94;
+    --color-ink: 12 11 11;
+    --color-page: 250 246 245;
     --color-card: 255 255 255;
-    --color-foreground: 17 24 39;
-    --color-muted: 91 100 114;
-    --radius-theme: 10px;
-    --font-heading: var(--font-poppins);
+    --color-foreground: 29 26 27;
+    --color-muted: 107 96 100;
+    --radius-theme: 16px;
+    --font-heading: var(--font-jost);
   }
 
   html {
@@ -40,6 +40,12 @@
   }
 
   body {
-    font-family: var(--font-poppins), var(--font-noto-bengali), sans-serif;
+    font-family: var(--font-jost), var(--font-noto-bengali), sans-serif;
+    letter-spacing: 0.01em;
+  }
+
+  ::selection {
+    background: #ebcbd1;
+    color: #0c0b0b;
   }
 }

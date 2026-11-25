@@ -1,4 +1,5 @@
 import { formatTaka } from "@/lib/utils/currency";
+import { siteConfig } from "@/config/site";
 import type { PrintDocument } from "@/server/admin/orders-admin";
 
 export function PrintSheets({
@@ -6,7 +7,7 @@ export function PrintSheets({
   footerNote,
   vatPercent,
   signature,
-  storeName = "UniBaazar",
+  storeName = siteConfig.name,
   logoUrl,
 }: {
   documents: PrintDocument[];

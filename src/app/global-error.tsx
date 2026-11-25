@@ -30,7 +30,7 @@ export default function GlobalError({
       >
         <main style={{ maxWidth: 560, margin: "12vh auto", padding: 24 }}>
           <h1 style={{ fontSize: 32, marginBottom: 8 }}>Something went wrong</h1>
-          <p style={{ color: "#6B7280" }}>UniBaazar could not load this page.</p>
+          <p style={{ color: "#6B7280" }}>Juliet&apos;s Zeal could not load this page.</p>
           {error.digest ? (
             <p style={{ color: "#6B7280", fontSize: 12 }}>Reference {error.digest}</p>
           ) : null}

@@ -7,6 +7,7 @@ import { ShakeOnError } from "@/components/motion";
 import { Button } from "@/components/ui/Button";
 import { buttonStyles } from "@/components/ui/buttonStyles";
 import { Input } from "@/components/ui/Input";
+import { CartSkeleton } from "@/components/store/cart/CartSkeleton";
 import { FreeDeliveryProgress } from "@/components/store/cart/FreeDeliveryProgress";
 import { QuantityStepper } from "@/components/store/cart/QuantityStepper";
 import { ProductMedia } from "@/components/store/product/ProductMedia";
@@ -17,7 +18,7 @@ import { useCartCatalog } from "@/lib/catalog/useCartCatalog";
 import { track } from "@/lib/tracking/browser";
 import { cartTrackItems } from "@/lib/tracking/cart";
 import { formatTaka } from "@/lib/utils/currency";
-import { useCartStore } from "@/store/cart";
+import { useCartHydrated, useCartStore } from "@/store/cart";
 import { useToastStore } from "@/store/toast";
 
 export function CartView() {
@@ -35,11 +36,14 @@ export function CartView() {
   const [error, setError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [applying, setApplying] = useState(false);
+  const hydrated = useCartHydrated();
   const { catalog, loading } = useCartCatalog(lines);
   const summary = summarizeCart(lines, couponDiscount, catalog);
 
-  if (summary.resolved.length === 0 && loading) {
-    return null;
+  // Until the saved cart is read from storage and its products resolved,
+  // "no resolved lines" doesn't mean empty — show a placeholder instead.
+  if (!hydrated || (summary.resolved.length === 0 && loading)) {
+    return <CartSkeleton />;
   }
 
   if (summary.resolved.length === 0) {

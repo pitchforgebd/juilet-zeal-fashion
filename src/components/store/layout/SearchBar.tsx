@@ -48,7 +48,7 @@ export function SearchBar({ id, initialQuery = "" }: SearchBarProps) {
         action="/search"
         method="get"
         role="search"
-        className="flex w-full overflow-hidden rounded-md border border-black/10 bg-white focus-within:border-primary"
+        className="flex w-full items-center overflow-hidden rounded-[10px] border border-ink/10 bg-page p-1 transition-colors duration-fast ease-standard focus-within:border-ink/30 focus-within:bg-card"
       >
         <label htmlFor={id} className="sr-only">
           {t("searchLabel")}
@@ -66,11 +66,11 @@ export function SearchBar({ id, initialQuery = "" }: SearchBarProps) {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          className="h-11 w-full min-w-0 bg-transparent px-4 text-sm text-foreground outline-none placeholder:text-muted"
+          className="h-9 w-full min-w-0 bg-transparent px-3 text-[15px] text-foreground outline-none placeholder:text-muted"
         />
         <button
           type="submit"
-          className="h-11 shrink-0 bg-primary px-4 text-sm font-semibold text-white hover:bg-primary-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink sm:px-5"
+          className="h-9 shrink-0 rounded-[6px] bg-ink px-4 text-sm font-medium text-white transition-colors duration-fast ease-standard hover:bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
         >
           {t("searchButton")}
         </button>
@@ -79,13 +79,13 @@ export function SearchBar({ id, initialQuery = "" }: SearchBarProps) {
         <ul
           role="listbox"
           aria-label={t("suggestions")}
-          className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-black/10 bg-card shadow-soft"
+          className="absolute z-50 mt-2 w-full overflow-hidden rounded-xl border border-ink/8 bg-card p-2 shadow-[0_8px_24px_rgba(0,0,0,0.06)]"
         >
           {suggestions.map((product) => (
             <li key={product.slug}>
               <button
                 type="button"
-                className="block w-full px-4 py-2 text-left text-sm hover:bg-peach"
+                className="flex h-9 w-full items-center rounded-[4px] px-3 text-left text-sm transition-colors duration-fast ease-standard hover:bg-page"
                 onClick={() => {
                   setOpen(false);
                   router.push(`/product/${product.slug}`);

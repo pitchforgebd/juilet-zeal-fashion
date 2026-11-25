@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   firstPartyPayload,
+  purchaseItems,
   toGa4,
   toMeta,
   toPinterest,
@@ -31,7 +32,7 @@ describe("toGa4", () => {
           {
             item_id: "SKU-1",
             item_name: "Story Book",
-            affiliation: "UniBaazar",
+            affiliation: "Juliet's Zeal",
             index: 0,
             item_brand: "Ayan",
             item_category: "Book",
@@ -67,7 +68,7 @@ describe("toGa4", () => {
     expect(params.tax).toBe(0);
     expect((params.items as Record<string, unknown>[])[0]).toMatchObject({
       coupon: "EID10",
-      affiliation: "UniBaazar",
+      affiliation: "Juliet's Zeal",
     });
     const list = toGa4("ViewItemList", { items: [toy], listName: "Shop" });
     expect((list.params.items as Record<string, unknown>[])[0].item_list_name).toBe(
@@ -169,5 +170,49 @@ describe("firstPartyPayload", () => {
       query: "lego",
       resultCount: 0,
     });
+  });
+});
+
+describe("purchaseItems", () => {
+  const line = { sku: "JZ-PDE-01", name: "Pearl Drop Earrings", unitPrice: 1490, qty: 2 };
+
+  it("fills brand, categories and variant from the checkout item with the same SKU", () => {
+    const known = [
+      {
+        id: "JZ-PDE-01",
+        name: "Pearl Drop Earrings",
+        price: 1890,
+        quantity: 1,
+        brand: "Juliet's Zeal",
+        categories: ["Accessories", "Jewellery"],
+        variant: "Gold",
+      },
+    ];
+    expect(purchaseItems([line], known)).toEqual([
+      {
+        id: "JZ-PDE-01",
+        name: "Pearl Drop Earrings",
+        price: 1490,
+        quantity: 2,
+        brand: "Juliet's Zeal",
+        categories: ["Accessories", "Jewellery"],
+        variant: "Gold",
+      },
+    ]);
+  });
+
+  it("keeps price and quantity from the order, never from the remembered item", () => {
+    const [item] = purchaseItems(
+      [line],
+      [{ id: "JZ-PDE-01", name: "x", price: 1, quantity: 9 }],
+    );
+    expect(item?.price).toBe(1490);
+    expect(item?.quantity).toBe(2);
+  });
+
+  it("still reports the item when checkout details are missing", () => {
+    expect(purchaseItems([line])).toEqual([
+      { id: "JZ-PDE-01", name: "Pearl Drop Earrings", price: 1490, quantity: 2 },
+    ]);
   });
 });

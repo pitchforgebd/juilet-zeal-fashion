@@ -120,8 +120,14 @@ async function main(): Promise<void> {
     colorSort += 1;
   }
 
+  // Parents are listed before their children in the mock catalog, so a
+  // child's parent row always exists by the time it's upserted.
+  const categoryIds = new Map<string, string>();
   for (const [index, category] of categories.entries()) {
-    await prisma.category.upsert({
+    const parentId = category.parentSlug
+      ? (categoryIds.get(category.parentSlug) ?? null)
+      : null;
+    const row = await prisma.category.upsert({
       where: { slug: category.slug },
       update: {
         name: category.name,
@@ -129,6 +135,7 @@ async function main(): Promise<void> {
         seoText: category.seoText,
         imageHue: category.hue,
         sortOrder: index,
+        parentId,
       },
       create: {
         slug: category.slug,
@@ -137,8 +144,10 @@ async function main(): Promise<void> {
         seoText: category.seoText,
         imageHue: category.hue,
         sortOrder: index,
+        parentId,
       },
     });
+    categoryIds.set(category.slug, row.id);
   }
 
   for (const brand of brands) {
@@ -191,15 +200,21 @@ async function main(): Promise<void> {
       },
     });
 
-    const category = await prisma.category.findUnique({
-      where: { slug: product.categorySlug },
-    });
-    if (category) {
-      await prisma.productCategory.upsert({
-        where: { productId_categoryId: { productId: saved.id, categoryId: category.id } },
-        update: {},
-        create: { productId: saved.id, categoryId: category.id },
-      });
+    // A product sits in its sub-category and that sub-category's parent, so
+    // both /category/women-dresses and /category/women list it.
+    const leaf = categories.find((category) => category.slug === product.categorySlug);
+    const linkedSlugs = [product.categorySlug, leaf?.parentSlug].filter(
+      (slug): slug is string => Boolean(slug),
+    );
+    for (const slug of linkedSlugs) {
+      const categoryId = categoryIds.get(slug);
+      if (categoryId) {
+        await prisma.productCategory.upsert({
+          where: { productId_categoryId: { productId: saved.id, categoryId } },
+          update: {},
+          create: { productId: saved.id, categoryId },
+        });
+      }
     }
 
     for (const [index, attribute] of product.attributes.entries()) {
@@ -272,7 +287,7 @@ async function main(): Promise<void> {
     update: { endsAt: new Date(flashSaleEndsAt), isActive: true },
     create: {
       id: "flash-week",
-      name: "Flash deals this week",
+      name: "The private sale",
       startsAt: new Date("2026-10-01T00:00:00+06:00"),
       endsAt: new Date(flashSaleEndsAt),
     },

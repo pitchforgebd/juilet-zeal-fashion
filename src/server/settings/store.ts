@@ -36,6 +36,14 @@ export type CheckoutSettings = {
   minOrder: number;
   cod: boolean;
   orderPrefix: string;
+  /** Manual QR payment: shopper scans, pays, then submits number + trx ID. */
+  qrEnabled: boolean;
+  /** Uploaded QR code image URL. */
+  qrImage: string;
+  /** Shown under the code, e.g. "bKash merchant · 01XXXXXXXXX". */
+  qrAccount: string;
+  /** Short instructions shown with the code. */
+  qrNote: string;
 };
 
 export type IntegrationSettings = {
@@ -99,11 +107,11 @@ export const themeDefaults: ThemeSettings = {
   // axe's color-contrast rule in e2e/a11y/key-pages.spec.ts for Phase 4.
   // An admin who types in their own custom top-bar color can still pick
   // something that fails contrast — this only fixes the shipped default.
-  primary: "#C94607",
+  primary: "#0C0B0B",
   font: "poppins",
   showTopBar: true,
   showChat: true,
-  presetId: "bazaar",
+  presetId: "juliet",
 };
 
 export const checkoutDefaults: CheckoutSettings = {
@@ -113,7 +121,11 @@ export const checkoutDefaults: CheckoutSettings = {
   guest: true,
   minOrder: 0,
   cod: true,
-  orderPrefix: "UB",
+  orderPrefix: "JZ",
+  qrEnabled: false,
+  qrImage: "",
+  qrAccount: "",
+  qrNote: "",
 };
 
 export const integrationDefaults: IntegrationSettings = {
@@ -135,7 +147,7 @@ export const integrationDefaults: IntegrationSettings = {
 export const invoiceDefaults: InvoiceSettings = {
   vatPercent: 0,
   prefix: "INV",
-  footer: "Thank you for shopping with UniBaazar.",
+  footer: "Thank you for shopping with Juliet's Zeal Fashion House.",
   signature: "",
 };
 
@@ -263,6 +275,10 @@ export async function loadCheckout(): Promise<CheckoutSettings> {
     minOrder: amount(row, "minOrder", checkoutDefaults.minOrder),
     cod: flag(row, "cod", checkoutDefaults.cod),
     orderPrefix: text(row, "orderPrefix", checkoutDefaults.orderPrefix),
+    qrEnabled: flag(row, "qrEnabled", checkoutDefaults.qrEnabled),
+    qrImage: text(row, "qrImage", checkoutDefaults.qrImage),
+    qrAccount: text(row, "qrAccount", checkoutDefaults.qrAccount),
+    qrNote: text(row, "qrNote", checkoutDefaults.qrNote),
   };
 }
 

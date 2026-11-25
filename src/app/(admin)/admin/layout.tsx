@@ -8,6 +8,7 @@ import { headers } from "next/headers";
 import { readSession } from "@/server/auth/session";
 import { touchAuthSession } from "@/server/auth/sessions";
 import { assertAdminIpAllowed } from "@/server/security/ip-allowlist";
+import { loadGeneral } from "@/server/settings/store";
 import {
   ensurePermissionCache,
   isStaffRole,
@@ -50,13 +51,17 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
   await ensurePermissionCache();
   void touchAuthSession(session.sid);
-  const user = await prisma.user.findUnique({
-    where: { id: session.userId },
-    select: { name: true },
-  });
+  const [user, general] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.userId },
+      select: { name: true },
+    }),
+    loadGeneral(),
+  ]);
   return (
     <AdminShell
       name={user?.name ?? "Staff"}
+      storeName={general.name}
       canCatalog={roleAllows(session.role, "catalog.manage")}
       canOrders={roleAllows(session.role, "orders.manage")}
       canCustomers={roleAllows(session.role, "customers.manage")}

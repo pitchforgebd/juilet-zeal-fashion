@@ -85,6 +85,8 @@ export type AdminOrderDetail = {
   paymentStatus: PaymentStatus;
   paymentAmount: number;
   paymentRefundedAmount: number;
+  /** What the shopper submitted for a QR payment, for staff to verify. */
+  paymentProof: { payerNumber: string; transactionId: string } | null;
   shipment: { courier: string; consignmentId: string; status: string } | null;
   invoiceNumber: string;
   returns: { id: string; status: string; reason: string; refundAmount: number | null }[];
@@ -224,7 +226,8 @@ export async function listAdminOrders(query: OrderListQuery): Promise<{
     query.payment === "BKASH" ||
     query.payment === "NAGAD" ||
     query.payment === "ROCKET" ||
-    query.payment === "CARD"
+    query.payment === "CARD" ||
+    query.payment === "QR"
   ) {
     where.paymentMethod = query.payment;
   }
@@ -321,6 +324,23 @@ async function fraudFor(
   };
 }
 
+function qrProof(
+  payment: { method: string; payload: Prisma.JsonValue } | undefined,
+): AdminOrderDetail["paymentProof"] {
+  if (payment?.method !== "QR") {
+    return null;
+  }
+  const payload =
+    payment.payload &&
+    typeof payment.payload === "object" &&
+    !Array.isArray(payment.payload)
+      ? payment.payload
+      : {};
+  const field = (key: string) =>
+    typeof payload[key] === "string" ? (payload[key] as string) : "";
+  return { payerNumber: field("payerNumber"), transactionId: field("transactionId") };
+}
+
 export async function getAdminOrder(id: string): Promise<AdminOrderDetail | null> {
   const order = await prisma.order.findUnique({
     where: { id },
@@ -415,6 +435,7 @@ export async function getAdminOrder(id: string): Promise<AdminOrderDetail | null
     paymentStatus: order.payments[0]?.status ?? "PENDING",
     paymentAmount: order.payments[0]?.amount.toNumber() ?? 0,
     paymentRefundedAmount: order.payments[0]?.refundedAmount.toNumber() ?? 0,
+    paymentProof: qrProof(order.payments[0]),
     shipment: order.shipment
       ? {
           courier: order.shipment.courier,

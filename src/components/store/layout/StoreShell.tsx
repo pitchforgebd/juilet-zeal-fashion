@@ -12,6 +12,8 @@ import { MobileNav } from "@/components/store/layout/MobileNav";
 import { TopBar } from "@/components/store/layout/TopBar";
 import { UtmCapture } from "@/components/store/layout/UtmCapture";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/seo/schema";
+import { buildCategoryTree } from "@/lib/catalog/categoryTree";
+import { listStoreCategories } from "@/server/catalog/products";
 import { StorePixels } from "@/components/store/tracking/StorePixels";
 import {
   loadCheckout,
@@ -28,14 +30,16 @@ type StoreShellProps = {
 
 export async function StoreShell({ children }: StoreShellProps) {
   const t = await getTranslations("common");
-  const [general, theme, checkout, social, system, tracking] = await Promise.all([
-    loadGeneral(),
-    loadTheme(),
-    loadCheckout(),
-    loadSocial(),
-    loadSystem(),
-    loadTracking(),
-  ]);
+  const [general, theme, checkout, social, system, tracking, categories] =
+    await Promise.all([
+      loadGeneral(),
+      loadTheme(),
+      loadCheckout(),
+      loadSocial(),
+      loadSystem(),
+      loadTracking(),
+      listStoreCategories(),
+    ]);
   const socialLinks = [
     { label: "Facebook" as const, href: social.facebook || "#" },
     { label: "Instagram" as const, href: social.instagram || "#" },
@@ -56,14 +60,18 @@ export async function StoreShell({ children }: StoreShellProps) {
       <UtmCapture />
       <a
         href="#main"
-        className="absolute top-4 left-4 z-50 -translate-y-24 rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white focus:translate-y-0"
+        className="absolute top-4 left-4 z-50 -translate-y-24 rounded-theme bg-primary px-4 py-2 text-sm font-semibold text-white focus:translate-y-0"
       >
         {t("skip")}
       </a>
       {theme.showTopBar ? (
         <TopBar freeFrom={checkout.freeFrom} color={theme.primary} />
       ) : null}
-      <Header name={general.name} logoUrl={general.logo} />
+      <Header
+        name={general.name}
+        logoUrl={general.logo}
+        tree={buildCategoryTree(categories)}
+      />
       <main id="main" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>

@@ -3,7 +3,8 @@ import { THEME_PRESETS, type ThemePresetId } from "@/lib/theme/presets";
 import { themeCssVars } from "@/lib/theme/styleTag";
 
 const LABEL: Record<ThemePresetId, string> = {
-  bazaar: "Bazaar — default, orange",
+  juliet: "Juliet — default, black & rose",
+  bazaar: "Bazaar — orange",
   luxe: "Luxe — dark, gold",
   fresh: "Fresh — green",
   tech: "Tech — blue",

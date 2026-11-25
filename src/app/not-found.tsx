@@ -13,7 +13,7 @@ export default function RootNotFound() {
       <body style={{ margin: 0, fontFamily: "sans-serif" }}>
         <main style={{ maxWidth: 480, margin: "15vh auto", textAlign: "center" }}>
           <h1 style={{ fontSize: 28 }}>Page not found</h1>
-          <p style={{ color: "#6B7280" }}>That page is not on UniBaazar.</p>
+          <p style={{ color: "#6B7280" }}>That page is not on Juliet&apos;s Zeal.</p>
           <Link href="/" style={{ color: "#AA3B06" }}>
             Go home
           </Link>

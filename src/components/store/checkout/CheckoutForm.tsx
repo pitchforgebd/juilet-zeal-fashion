@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { MapPin, Truck } from "lucide-react";
 import { CaptchaField } from "@/components/store/auth/CaptchaField";
+import { CartSkeleton } from "@/components/store/cart/CartSkeleton";
 import { Button } from "@/components/ui/Button";
 import { buttonStyles } from "@/components/ui/buttonStyles";
 import { FieldError } from "@/components/ui/Field";
@@ -19,6 +20,7 @@ import { useCheckoutQuote, type CheckoutQuote } from "@/lib/catalog/useCheckoutQ
 import { TrackOnce } from "@/components/store/tracking/TrackOnce";
 import { track } from "@/lib/tracking/browser";
 import { cartTrackItems } from "@/lib/tracking/cart";
+import { rememberPurchaseItems } from "@/lib/tracking/events";
 import { readAdIdentifiers } from "@/lib/tracking/fbclid";
 import { readUtm } from "@/lib/tracking/utm";
 import { isStoredOrder, savePlacedOrder } from "@/lib/orders/session";
@@ -29,19 +31,33 @@ import {
   type CheckoutInput,
 } from "@/lib/validation/customer";
 import { translatedError } from "@/lib/validation/messages";
-import { useCartStore } from "@/store/cart";
+import { useCartHydrated, useCartStore } from "@/store/cart";
 import { CheckoutSummary } from "./CheckoutSummary";
 import { ChoiceCard, choiceRadioClass } from "./ChoiceCard";
+import { QrPaymentPanel, type QrPaymentConfig } from "./QrPaymentPanel";
 import { usePaymentChoices } from "./usePaymentChoices";
 
 const iconClass = "size-5";
 
-export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
+export function CheckoutForm({
+  codEnabled = true,
+  onlineEnabled = false,
+  qr = null,
+}: {
+  codEnabled?: boolean;
+  onlineEnabled?: boolean;
+  /** QR payment details when it's switched on, otherwise null. */
+  qr?: QrPaymentConfig | null;
+}) {
   const router = useRouter();
   const t = useTranslations("checkout");
   const shop = useTranslations("shop");
   const v = useTranslations("validation");
-  const payments = usePaymentChoices();
+  const payments = usePaymentChoices({
+    cod: codEnabled,
+    online: onlineEnabled,
+    qr: qr !== null,
+  });
   const lines = useCartStore((state) => state.lines);
   const couponCode = useCartStore((state) => state.couponCode);
   const couponDiscount = useCartStore((state) => state.couponDiscount);
@@ -61,13 +77,17 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
       phone: "",
       email: "",
       address: "",
+      qrPayerNumber: "",
+      qrTransactionId: "",
       area: "inside-dhaka",
-      paymentMethod: codEnabled ? "cod" : "bkash",
+      paymentMethod: payments[0]?.value ?? "cod",
     },
   });
 
   const area = watch("area");
-  const { catalog } = useCartCatalog(lines);
+  const paymentMethod = watch("paymentMethod");
+  const hydrated = useCartHydrated();
+  const { catalog, loading } = useCartCatalog(lines);
   // Line items (name/qty/unit price) come from the already-loaded product
   // catalog — no round trip needed for those. Subtotal/discount/delivery/
   // total come from the live quote below instead, the same endpoint that
@@ -83,6 +103,12 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
         ? t("deliveryFree")
         : formatTaka(quote.deliveryCharge)
       : "…";
+
+  // Same guard as the cart page: before the saved cart is read from
+  // storage and its products resolved, zero resolved lines isn't "empty".
+  if (!hydrated || (summary.resolved.length === 0 && loading)) {
+    return <CartSkeleton />;
+  }
 
   if (summary.resolved.length === 0) {
     return (
@@ -136,8 +162,11 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
       return;
     }
     savePlacedOrder(order);
+    rememberPurchaseItems(order.id, items);
     clear();
-    if (values.paymentMethod === "cod") {
+    // COD and QR are complete once placed (QR waits for an admin to
+    // verify the transaction ID); only the gateway needs a redirect.
+    if (values.paymentMethod === "cod" || values.paymentMethod === "qr") {
       router.push(`/order-success/${order.id}`);
       return;
     }
@@ -194,13 +223,6 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
               {...register("phone")}
             />
           </div>
-          <Input
-            label={t("fieldEmailOptional")}
-            type="email"
-            autoComplete="email"
-            error={translatedError(v, errors.email?.message)}
-            {...register("email")}
-          />
           <Textarea
             label={t("fieldAddress")}
             autoComplete="street-address"
@@ -247,26 +269,57 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
           <legend className="font-heading text-lg font-semibold text-ink">
             {t("paymentMethodLegend")}
           </legend>
+          {payments.length === 0 ? (
+            <p role="alert" className="rounded-theme bg-peach p-4 text-sm text-ink">
+              {t("paymentUnavailable")}
+            </p>
+          ) : null}
           <div className="grid gap-2 sm:grid-cols-2">
-            {payments
-              .filter((method) => codEnabled || method.value !== "cod")
-              .map((method) => (
-                <ChoiceCard
-                  key={method.value}
-                  control={
-                    <input
-                      type="radio"
-                      value={method.value}
-                      className={choiceRadioClass}
-                      {...register("paymentMethod")}
-                    />
-                  }
-                  icon={method.icon}
-                  title={method.label}
-                  description={method.hint}
-                />
-              ))}
+            {payments.map((method) => (
+              <ChoiceCard
+                key={method.value}
+                control={
+                  <input
+                    type="radio"
+                    value={method.value}
+                    className={choiceRadioClass}
+                    {...register("paymentMethod")}
+                  />
+                }
+                icon={method.icon}
+                title={method.label}
+                description={method.hint}
+              />
+            ))}
           </div>
+          {qr && paymentMethod === "qr" ? (
+            <QrPaymentPanel
+              config={qr}
+              amount={liveQuote ? formatTaka(liveQuote.total) : "…"}
+              fields={
+                <>
+                  <Input
+                    label={t("qrPayerNumberLabel")}
+                    inputMode="tel"
+                    autoComplete="tel"
+                    required
+                    placeholder={t("phonePlaceholder")}
+                    error={translatedError(v, errors.qrPayerNumber?.message)}
+                    {...register("qrPayerNumber")}
+                  />
+                  <Input
+                    label={t("qrTransactionIdLabel")}
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                    required
+                    error={translatedError(v, errors.qrTransactionId?.message)}
+                    {...register("qrTransactionId")}
+                  />
+                </>
+              }
+            />
+          ) : null}
         </fieldset>
         <CaptchaField onToken={(token) => setValue("captchaToken", token)} />
         {formError ? (
@@ -297,7 +350,11 @@ export function CheckoutForm({ codEnabled = true }: { codEnabled?: boolean }) {
           isLoading={isSubmitting}
           loadingLabel={t("submitting")}
           disabled={
-            isSubmitting || quoteState.loading || !liveQuote || !!quoteState.error
+            isSubmitting ||
+            quoteState.loading ||
+            !liveQuote ||
+            !!quoteState.error ||
+            payments.length === 0
           }
         >
           {t("submit")}

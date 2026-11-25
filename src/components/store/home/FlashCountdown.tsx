@@ -14,7 +14,7 @@ type FlashCountdownProps = {
 // white-on-ink isn't — Luxe's ink is a light cream.
 const tones = {
   solid: "bg-ink text-page",
-  onDark: "bg-page/10 text-page ring-1 ring-page/20",
+  onDark: "bg-white/[0.06] text-white ring-1 ring-white/10",
 };
 
 function parts(
@@ -55,14 +55,14 @@ export function FlashCountdown({ endsAt, tone = "solid" }: FlashCountdownProps) 
         <div
           key={box.label}
           className={cn(
-            "grid h-14 w-14 place-items-center rounded-theme py-1",
+            "grid h-18 w-16 place-items-center content-center gap-1 rounded-xl sm:w-20",
             tones[tone],
           )}
         >
-          <span className="font-heading text-lg leading-none font-bold tabular-nums">
+          <span className="font-heading text-[1.75rem] leading-none font-normal tabular-nums">
             {now === null ? "--" : box.value}
           </span>
-          <span className="text-[10px] tracking-wide uppercase">{box.label}</span>
+          <span className="text-xs opacity-70">{box.label}</span>
         </div>
       ))}
     </div>

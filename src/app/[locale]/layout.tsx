@@ -41,7 +41,13 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const tokens = THEME_PRESETS[theme.presetId];
 
   return (
-    <html lang={locale} className={`${fontVariables} h-full`}>
+    <html
+      lang={locale}
+      className={`${fontVariables} h-full`}
+      // globals.css smooth-scrolls (reduced-motion aware); this tells Next
+      // to pause it during route changes so navigation lands instantly.
+      data-scroll-behavior="smooth"
+    >
       <head>
         {/* Per-request, not build-time — this is the entire "switching a
          * preset re-skins the storefront with no rebuild" mechanism (see

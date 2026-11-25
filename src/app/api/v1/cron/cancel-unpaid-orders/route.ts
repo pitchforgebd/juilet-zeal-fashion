@@ -11,7 +11,9 @@ export async function POST(request: Request) {
     const stale = await prisma.order.findMany({
       where: {
         status: "PENDING",
-        paymentMethod: { not: "COD" },
+        // COD is paid on delivery; QR waits for an admin to verify the
+        // shopper's transaction ID — neither is "unpaid" in this sense.
+        paymentMethod: { notIn: ["COD", "QR"] },
         placedAt: { lt: new Date(Date.now() - unpaidAfterMs) },
       },
       select: { id: true },

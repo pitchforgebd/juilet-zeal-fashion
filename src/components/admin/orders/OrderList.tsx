@@ -8,6 +8,7 @@ import {
   areaLabel,
   orderStatusVariant,
   paymentStatusVariant,
+  paymentLabel,
   prettyStatus,
 } from "./labels";
 import { OrderFiltersForm } from "./OrderFiltersForm";
@@ -221,7 +222,7 @@ export function OrderList({
                     </Badge>
                   </td>
                   <td className="px-3 py-3">
-                    {prettyStatus(row.paymentMethod)}
+                    {paymentLabel(row.paymentMethod)}
                     <p className="mt-1">
                       <Badge variant={paymentStatusVariant(row.paymentStatus)}>
                         {prettyStatus(row.paymentStatus)}

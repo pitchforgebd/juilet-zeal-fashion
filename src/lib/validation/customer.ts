@@ -15,15 +15,41 @@ export const phoneField = z
 
 export const captchaToken = z.string().trim().optional();
 
-export const checkoutSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name"),
-  phone: phoneField,
-  email: z.union([z.literal(""), z.string().trim().email("Enter a valid email")]),
-  address: z.string().trim().min(8, "Enter the full delivery address"),
-  area: z.enum(["inside-dhaka", "outside-dhaka"]),
-  paymentMethod: z.enum(["cod", "bkash", "nagad", "rocket", "card"]),
-  captchaToken,
-});
+/** bKash/Nagad/Rocket transaction IDs: letters and digits, no spaces. */
+export const QR_TRANSACTION_ID = /^[A-Za-z0-9]{6,30}$/;
+
+export const checkoutSchema = z
+  .object({
+    name: z.string().trim().min(2, "Enter your name"),
+    phone: phoneField,
+    email: z.union([z.literal(""), z.string().trim().email("Enter a valid email")]),
+    address: z.string().trim().min(8, "Enter the full delivery address"),
+    area: z.enum(["inside-dhaka", "outside-dhaka"]),
+    paymentMethod: z.enum(["cod", "bkash", "nagad", "rocket", "card", "qr"]),
+    // Only for paymentMethod "qr": who paid, and the payment's transaction ID.
+    qrPayerNumber: z.string().trim().optional(),
+    qrTransactionId: z.string().trim().optional(),
+    captchaToken,
+  })
+  .superRefine((value, ctx) => {
+    if (value.paymentMethod !== "qr") {
+      return;
+    }
+    if (!normalizeBdPhone(value.qrPayerNumber ?? "")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["qrPayerNumber"],
+        message: "Enter the number you paid from",
+      });
+    }
+    if (!QR_TRANSACTION_ID.test(value.qrTransactionId ?? "")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["qrTransactionId"],
+        message: "Enter the transaction ID from your payment",
+      });
+    }
+  });
 
 export type CheckoutInput = z.infer<typeof checkoutSchema>;
 

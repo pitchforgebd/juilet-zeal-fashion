@@ -10,7 +10,8 @@ import type { ActionResult } from "@/server/admin/result";
 import type { ThemeSettings } from "@/server/settings/store";
 
 const PRESET_LABEL: Record<ThemePresetId, string> = {
-  bazaar: "Bazaar (default, orange)",
+  juliet: "Juliet (default, black & rose)",
+  bazaar: "Bazaar (orange)",
   luxe: "Luxe (dark, gold)",
   fresh: "Fresh (green)",
   tech: "Tech (blue)",

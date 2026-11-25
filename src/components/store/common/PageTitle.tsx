@@ -25,11 +25,11 @@ export function PageTitle({
   const t = useTranslations("common");
   return (
     <div className="bg-peach">
-      <Container className="py-8">
+      <Container className="py-10 sm:py-14">
         {crumbs.length > 0 ? (
           <nav aria-label={t("breadcrumbAria")} className="mb-3">
             <JsonLd data={breadcrumbJsonLd(crumbs)} />
-            <ol className="flex flex-wrap items-center gap-1 text-sm text-muted">
+            <ol className="flex flex-wrap items-center gap-1 text-[11px] tracking-[0.16em] text-muted uppercase">
               {crumbs.map((crumb, index) => {
                 const last = index === crumbs.length - 1;
                 return (
@@ -49,7 +49,9 @@ export function PageTitle({
           </nav>
         ) : null}
         {showHeading ? (
-          <h1 className="text-2xl font-bold text-ink sm:text-3xl">{title}</h1>
+          <h1 className="font-heading text-3xl font-light tracking-[0.04em] text-ink sm:text-4xl">
+            {title}
+          </h1>
         ) : null}
         {subtitle ? (
           <p className="mt-2 max-w-2xl text-sm text-muted">{subtitle}</p>

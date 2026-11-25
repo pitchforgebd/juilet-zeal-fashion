@@ -66,6 +66,12 @@ async function config(): Promise<SslcommerzConfig | null> {
   };
 }
 
+/** Whether the gateway has credentials (admin settings or `.env`), so the
+ * storefront only offers "Pay online" when it can actually take payment. */
+export async function isOnlinePaymentConfigured(): Promise<boolean> {
+  return (await config()) !== null;
+}
+
 async function initiate(order: PaymentOrderInput): Promise<PaymentInitResult> {
   const configured = await config();
   if (!configured) {

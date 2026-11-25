@@ -8,6 +8,17 @@ export function prettyStatus(status: string): string {
     .join(" ");
 }
 
+const PAYMENT_LABELS: Record<string, string> = {
+  COD: "Cash on delivery",
+  CARD: "Online (SSLCommerz)",
+  QR: "QR payment",
+};
+
+/** Payment method for admin display; legacy wallet methods fall back. */
+export function paymentLabel(method: string): string {
+  return PAYMENT_LABELS[method] ?? prettyStatus(method);
+}
+
 export function areaLabel(area: string): string {
   return area === "INSIDE_DHAKA" ? "Inside Dhaka" : "Outside Dhaka";
 }

@@ -239,7 +239,7 @@ export async function seedDemoCatalog(): Promise<SeedCatalogResult> {
     update: { endsAt: new Date(flashSaleEndsAt), isActive: true },
     create: {
       id: "flash-week",
-      name: "Flash deals this week",
+      name: "The private sale",
       startsAt: new Date("2026-10-01T00:00:00+06:00"),
       endsAt: new Date(flashSaleEndsAt),
     },

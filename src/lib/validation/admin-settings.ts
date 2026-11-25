@@ -24,21 +24,31 @@ export const themeSchema = z.object({
   font: z.enum(["poppins", "system"]),
   showTopBar: z.boolean(),
   showChat: z.boolean(),
-  presetId: z.enum(["bazaar", "luxe", "fresh", "tech"]),
+  presetId: z.enum(["juliet", "bazaar", "luxe", "fresh", "tech"]),
 });
 
-export const checkoutSchema = z.object({
-  inside: money,
-  outside: money,
-  freeFrom: money,
-  guest: z.boolean(),
-  minOrder: money,
-  cod: z.boolean(),
-  orderPrefix: z
-    .string()
-    .trim()
-    .regex(/^[A-Z]{2,6}$/, "Use 2 to 6 capital letters"),
-});
+export const checkoutSchema = z
+  .object({
+    inside: money,
+    outside: money,
+    freeFrom: money,
+    guest: z.boolean(),
+    minOrder: money,
+    cod: z.boolean(),
+    orderPrefix: z
+      .string()
+      .trim()
+      .regex(/^[A-Z]{2,6}$/, "Use 2 to 6 capital letters"),
+    qrEnabled: z.boolean(),
+    qrImage: z.string().trim().max(500),
+    qrAccount: z.string().trim().max(120),
+    qrNote: z.string().trim().max(300),
+  })
+  // Turning QR on without a code to scan would leave shoppers stuck.
+  .refine((value) => !value.qrEnabled || value.qrImage.length > 0, {
+    message: "Upload the QR code image before turning QR payment on",
+    path: ["qrImage"],
+  });
 
 export const integrationSchema = z.object({
   bkashEnabled: z.boolean(),

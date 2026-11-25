@@ -197,7 +197,7 @@ test("description parity: rich text shows as formatting on the product page, nev
   const marker = `Rich ${Date.now()}`;
   await page.goto("/admin/products", { waitUntil: "networkidle" });
   await page
-    .locator("tr", { hasText: "Kids School Bag" })
+    .locator("tr", { hasText: "Girls' Tiered Frock" })
     .first()
     .getByRole("link", { name: "Edit" })
     .click();
@@ -218,7 +218,7 @@ test("description parity: rich text shows as formatting on the product page, nev
     timeout: 20_000,
   });
 
-  await page.goto("/product/kids-school-bag", { waitUntil: "networkidle" });
+  await page.goto("/product/girls-tiered-frock", { waitUntil: "networkidle" });
   const bold = page.locator("strong", { hasText: "bold" }).first();
   await expect(bold).toBeVisible({ timeout: 10_000 });
   await expect(page.locator("li", { hasText: "First point" }).first()).toBeVisible();

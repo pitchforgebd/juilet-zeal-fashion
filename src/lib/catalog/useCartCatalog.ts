@@ -6,6 +6,8 @@ import type { CartLine, Product } from "@/types/catalog";
 export function useCartCatalog(lines: CartLine[]): {
   catalog: Map<string, Product>;
   loading: boolean;
+  /** Slugs the API confirmed were deleted — see deadCartLines(). */
+  gone: string[];
 } {
   return useResolvedProducts(lines.map((line) => line.slug));
 }

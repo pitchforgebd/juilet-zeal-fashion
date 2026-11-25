@@ -6,10 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { buttonStyles } from "@/components/ui/buttonStyles";
 import { PageTitle, type Crumb } from "@/components/store/common/PageTitle";
 import { ProductGrid } from "@/components/store/product/ProductCard";
-import { SelectItemTracker } from "@/components/store/tracking/SelectItemTracker";
-import { TrackOnce } from "@/components/store/tracking/TrackOnce";
-import { defaultVariant } from "@/lib/catalog/pricing";
-import { productTrackItem } from "@/lib/tracking/ecommerce";
+import { TrackedList } from "@/components/store/tracking/TrackedList";
 import { itemListJsonLd } from "@/lib/seo/schema";
 import { activeFilterCount } from "@/components/store/shop/activeFilters";
 import { FilterForm, type ShopTranslator } from "@/components/store/shop/FilterForm";
@@ -73,11 +70,6 @@ export async function ProductListing({
   // them (and an open mobile sheet) showing the previous URL's state.
   // Keying on the current URL remounts them whenever it changes.
   const urlKey = shopHref(basePath, query);
-  const listed = page.items.map((product) => ({
-    slug: product.slug,
-    item: productTrackItem(product, defaultVariant(product)),
-  }));
-  const listItems = listed.map((entry) => entry.item);
   const formProps = {
     t,
     basePath,
@@ -158,13 +150,9 @@ export async function ProductListing({
               </Link>
             </div>
           ) : (
-            <SelectItemTracker listName={title} products={listed}>
-              <TrackOnce
-                name="ViewItemList"
-                data={{ listName: title, items: listItems }}
-              />
+            <TrackedList listName={title} products={page.items}>
               <ProductGrid products={page.items} reveal />
-            </SelectItemTracker>
+            </TrackedList>
           )}
           <Pagination
             t={t}

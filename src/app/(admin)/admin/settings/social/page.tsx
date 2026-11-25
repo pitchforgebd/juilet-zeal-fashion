@@ -22,7 +22,7 @@ export default async function SocialSettingsPage() {
       <SettingsNav />
       <SettingsForm
         title="Social"
-        intro="Footer icons, chat buttons, social login, homepage embeds, and Facebook catalog sync use these fields. Leave a secret blank to keep the saved value."
+        intro="Footer icons, chat buttons, social login and Facebook catalog sync use these fields. Leave a secret blank to keep the saved value."
         initial={{
           ...values,
           googleClientSecret: "",
@@ -53,11 +53,6 @@ export default async function SocialSettingsPage() {
             name: "youtubeHomeVideo",
             label: "Homepage YouTube video URL",
             kind: "text",
-          },
-          {
-            name: "instagramPosts",
-            label: "Homepage Instagram post URLs (one per line)",
-            kind: "textarea",
           },
           {
             name: "autoPostProducts",

@@ -28,7 +28,8 @@ export function OrderSuccessView({ id }: { id: string }) {
     bkash: checkout("paymentBkash"),
     nagad: checkout("paymentNagad"),
     rocket: checkout("paymentRocket"),
-    card: checkout("paymentCard"),
+    card: checkout("paymentOnline"),
+    qr: checkout("paymentQr"),
   };
 
   useEffect(() => {
@@ -78,6 +79,11 @@ export function OrderSuccessView({ id }: { id: string }) {
               {t("successHeading", { name: order.name })}
             </h2>
             <p className="max-w-prose text-sm text-muted">{t("successIntro")}</p>
+            {order.paymentMethod === "qr" ? (
+              <p className="max-w-prose rounded-lg bg-page px-4 py-3 text-sm text-ink">
+                {t("qrVerifying")}
+              </p>
+            ) : null}
             <dl className="mt-1 flex flex-wrap justify-center gap-2 text-sm">
               <div className="flex gap-1.5 rounded-full bg-page px-3 py-1">
                 <dt className="text-muted">{t("orderIdLabel")}</dt>

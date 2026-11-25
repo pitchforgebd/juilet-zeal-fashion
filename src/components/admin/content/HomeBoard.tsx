@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { homeAction } from "@/app/(admin)/admin/content-actions";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
-import { Input } from "@/components/ui/Input";
 import { Stagger, StaggerItem } from "@/components/motion";
 import type { HomeSectionRow } from "@/server/admin/content";
 
@@ -56,25 +55,6 @@ export function HomeBoard({ rows }: { rows: HomeSectionRow[] }) {
             >
               <div>
                 <p className="font-semibold text-ink">{section.title}</p>
-                <p className="text-xs text-muted">{section.key}</p>
-                {section.key === "featured" ? (
-                  <div className="mt-2 max-w-xs">
-                    <Input
-                      label="Category slug"
-                      value={section.target}
-                      onChange={(event) =>
-                        setSections((current) =>
-                          current.map((row) =>
-                            row.key === section.key
-                              ? { ...row, target: event.target.value }
-                              : row,
-                          ),
-                        )
-                      }
-                      placeholder="Optional"
-                    />
-                  </div>
-                ) : null}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Checkbox

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prettyStatus } from "./labels";
+import { paymentLabel, prettyStatus } from "./labels";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
@@ -30,9 +30,9 @@ export function OrderFiltersForm({ query }: { query: OrderListQuery }) {
       </Select>
       <Select name="payment" label="Payment" defaultValue={query.payment}>
         <option value="">Any method</option>
-        {["COD", "BKASH", "NAGAD", "ROCKET", "CARD"].map((item) => (
+        {["COD", "CARD", "QR", "BKASH", "NAGAD", "ROCKET"].map((item) => (
           <option key={item} value={item}>
-            {prettyStatus(item)}
+            {paymentLabel(item)}
           </option>
         ))}
       </Select>

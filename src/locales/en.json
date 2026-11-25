@@ -3,7 +3,7 @@
     "freeDelivery": "Free delivery on orders over {amount}",
     "skip": "Skip to content",
     "searchLabel": "Search products",
-    "searchPlaceholder": "Search for products...",
+    "searchPlaceholder": "Search products",
     "searchButton": "Search",
     "suggestions": "Suggestions",
     "home": "Home",
@@ -15,44 +15,42 @@
     "cart": "Cart",
     "account": "Account",
     "language": "Language",
-    "breadcrumbAria": "Breadcrumb"
+    "breadcrumbAria": "Breadcrumb",
+    "loading": "Loading…"
   },
   "links": {
-    "newsletter": "Newsletter",
-    "trackOrder": "Track Order",
-    "login": "Login / Register",
-    "help": "Help & Support",
+    "trackOrder": "Track order",
+    "login": "Log in / Register",
+    "help": "Help & support",
     "faq": "FAQs",
-    "contact": "Contact Us",
-    "howToBuy": "How to Buy",
-    "returnPolicy": "Return Policy",
-    "shippingPolicy": "Shipping Policy",
-    "about": "About Us",
+    "contact": "Contact us",
+    "howToBuy": "How to buy",
+    "returnPolicy": "Return policy",
+    "shippingPolicy": "Shipping policy",
+    "about": "About us",
     "blog": "Blog",
-    "privacy": "Privacy Policy",
-    "terms": "Terms & Conditions",
-    "sizeGuide": "Size Guide",
-    "orderReturns": "Order & Returns"
+    "privacy": "Privacy policy",
+    "terms": "Terms & conditions",
+    "sizeGuide": "Size guide",
+    "orderReturns": "Orders & returns"
   },
   "footer": {
-    "customerService": "Customer Service",
-    "usefulLinks": "Useful Links",
-    "newsletter": "Newsletter",
-    "newsletterText": "Get offers and order updates.",
-    "email": "Email address",
-    "emailPlaceholder": "Your email",
-    "subscribe": "Subscribe",
-    "subscribing": "Subscribing…",
-    "subscribed": "Thanks for subscribing!",
-    "subscribeError": "Could not subscribe. Try again.",
+    "customerService": "Customer service",
+    "usefulLinks": "Useful links",
     "download": "Download the app",
     "follow": "Follow us",
-    "accept": "We Accept",
-    "delivery": "Delivery Partners",
-    "rights": "All rights reserved."
+    "accept": "We accept",
+    "delivery": "Delivery partners",
+    "rights": "All rights reserved.",
+    "contact": "Talk to us"
   },
   "nav": {
-    "quickLinks": "Quick links"
+    "quickLinks": "Quick links",
+    "categories": "Shop by category",
+    "newIn": "New in",
+    "myAccount": "My account",
+    "viewAll": "View all",
+    "expand": "Show {name} sub-categories"
   },
   "breadcrumb": {
     "cart": "Cart",
@@ -68,30 +66,11 @@
     "social": "Social"
   },
   "home": {
-    "trustFastDeliveryTitle": "Fast delivery",
-    "trustFastDeliveryText": "Inside Dhaka and nationwide",
-    "trustAuthorizedTitle": "Authorized products",
-    "trustAuthorizedText": "Warranty stated on the product",
-    "trustSupportTitle": "Support",
-    "trustSupportText": "Help with orders and returns",
-    "trustPaymentsTitle": "Payments",
-    "trustPaymentsText": "COD, bKash, Nagad, Rocket, card",
-    "allProducts": "All products",
     "flashSaleTitle": "Flash sale",
-    "viewAllDeals": "View all deals",
+    "viewAllDeals": "Shop the sale",
     "offersLabel": "Offers",
-    "offersTagline": "Save on electronics, fashion, and groceries",
-    "featuredTitle": "Featured",
-    "shopAll": "Shop all",
-    "recentTitle": "Recent",
-    "newest": "Newest",
-    "bestSellersTitle": "Best sellers",
-    "testimonialsTitle": "Testimonials",
-    "watchAndShopTitle": "Watch and shop",
-    "instagramTitle": "Instagram",
-    "openProfile": "Open profile",
-    "blogTitle": "From the blog",
-    "allPosts": "All posts",
+    "featuredTitle": "The signature edit",
+    "testimonialsTitle": "What customers say",
     "shopNow": "Shop now",
     "showSlide": "Show slide {number}",
     "countdownDays": "Days",
@@ -99,7 +78,25 @@
     "countdownMinutes": "Min",
     "countdownSeconds": "Sec",
     "flashSaleTimeLeft": "Time left in the flash sale",
-    "testimonialAlt": "Message from {name}"
+    "testimonialAlt": "Message from {name}",
+    "heroEyebrow": "New season 2026",
+    "heroSecondary": "New arrivals",
+    "prevSlide": "Previous slide",
+    "nextSlide": "Next slide",
+    "categoriesTitle": "Shop by category",
+    "tabNew": "New arrivals",
+    "tabBest": "Best sellers",
+    "tabSale": "On sale",
+    "flashSaleText": "Seasonal pieces at reduced prices until the timer runs out",
+    "shopCategory": "Shop {name}",
+    "trustDeliveryTitle": "Delivery across Bangladesh",
+    "trustDeliveryText": "Inside and outside Dhaka",
+    "trustCodTitle": "Cash on delivery",
+    "trustCodText": "Pay when your order arrives",
+    "trustExchangeTitle": "Returns and exchanges",
+    "trustExchangeText": "Details in our return policy",
+    "trustTrackingTitle": "Order tracking",
+    "trustTrackingText": "Follow your order to your door"
   },
   "shop": {
     "pageSubtitle": "All products. Filter by category, brand, price, size, color, rating, and stock.",
@@ -136,7 +133,7 @@
     "categoryFallback": "Category",
     "brandFallback": "Brand",
     "searchTitle": "Search",
-    "searchDescription": "Search UniBaazar products.",
+    "searchDescription": "Search Juliet's Zeal products.",
     "searchHint": "Type at least two letters to see suggestions.",
     "searchResultsFor": "Results for \"{query}\"",
     "noSearchMatches": "No products match that search.",
@@ -277,7 +274,7 @@
       "addToCompare": "Add to compare",
       "warrantyLabel": "Warranty: ",
       "returnsLabel": "Returns: ",
-      "whatsappMessage": "Hello UniBaazar, I want to order {name} (SKU: {sku})."
+      "whatsappMessage": "Hello Juliet's Zeal, I want to order {name} (SKU: {sku})."
     },
     "badgeNew": "New",
     "gallery": {
@@ -303,14 +300,12 @@
     "paymentBkash": "bKash",
     "paymentNagad": "Nagad",
     "paymentRocket": "Rocket",
-    "paymentCard": "Card",
     "emptyCart": "Your cart is empty.",
     "errorPlaceOrder": "Could not place the order",
     "deliveryDetailsHeading": "Delivery details",
     "fieldName": "Name",
     "fieldPhone": "Phone",
     "phonePlaceholder": "01XXXXXXXXX",
-    "fieldEmailOptional": "Email (optional)",
     "fieldAddress": "Address",
     "deliveryAreaLegend": "Delivery area",
     "areaInsideDhaka": "Inside Dhaka",
@@ -324,9 +319,19 @@
     "total": "Total",
     "submit": "Place order",
     "paymentCodHint": "Pay in cash when your order arrives",
-    "paymentWalletHint": "Pay from your {name} account",
-    "paymentCardHint": "Debit or credit card",
-    "submitting": "Placing order…"
+    "submitting": "Placing order…",
+    "paymentOnline": "Pay online",
+    "paymentOnlineHint": "bKash, Nagad, Rocket or card — on a secure payment page",
+    "paymentUnavailable": "Online payment and cash on delivery are both turned off right now. Please contact us to place your order.",
+    "paymentQr": "Pay by QR code",
+    "paymentQrHint": "Scan our code, pay, then enter the transaction ID",
+    "qrImageAlt": "Payment QR code",
+    "qrAmountLabel": "Amount to pay",
+    "qrStepScan": "Scan the code with your payment app",
+    "qrStepPay": "Pay the exact amount above",
+    "qrStepSubmit": "Enter the number you paid from and the transaction ID",
+    "qrPayerNumberLabel": "Number you paid from",
+    "qrTransactionIdLabel": "Transaction ID"
   },
   "orders": {
     "metaTitle": "Order {id}",
@@ -383,7 +388,8 @@
       "onHold": "On hold",
       "partialDelivered": "Partially delivered",
       "refunded": "Refunded"
-    }
+    },
+    "qrVerifying": "We've received your payment details. We'll confirm your order once we've verified the transaction."
   },
   "auth": {
     "errorVerifyCode": "Could not verify the code",
@@ -533,7 +539,7 @@
   "error": {
     "notFound": {
       "title": "Page not found",
-      "body": "That page is not on UniBaazar.",
+      "body": "That page is not on Juliet's Zeal.",
       "homeButton": "Home",
       "shopButton": "Shop"
     },
@@ -562,6 +568,8 @@
     "newPasswordMin": "Use at least 6 characters",
     "confirmNewPassword": "Confirm the new password",
     "addressName": "Enter a name",
-    "addressLine1": "Enter the full address"
+    "addressLine1": "Enter the full address",
+    "qrPayerNumber": "Enter the number you paid from",
+    "qrTransactionId": "Enter the transaction ID from your payment"
   }
 }

@@ -3,7 +3,7 @@ import type { TrackName } from "@/lib/tracking/names";
 import type { Product, ProductVariant } from "@/types/catalog";
 
 export const TRACKING_CURRENCY = "BDT";
-export const TRACKING_AFFILIATION = "UniBaazar";
+export const TRACKING_AFFILIATION = "Juliet's Zeal";
 
 /** `id` is the variant SKU: the same id the Meta/Google catalog feeds publish. */
 export type TrackItem = {
@@ -55,6 +55,31 @@ export function productTrackItem(
     ...(product.categoryPath?.length ? { categories: product.categoryPath } : {}),
     ...(label ? { variant: label } : {}),
   };
+}
+
+/**
+ * Purchase items from the placed order (server truth for SKU, name, price
+ * and quantity), with brand / categories / variant filled in from the items
+ * checkout tracked — the order lines the server returns don't carry them,
+ * and GA4 needs the same item_category on purchase as on every earlier
+ * event to tie the funnel together.
+ */
+export function purchaseItems(
+  lines: { sku: string; name: string; unitPrice: number; qty: number }[],
+  known: TrackItem[] = [],
+): TrackItem[] {
+  return lines.map((line) => {
+    const match = known.find((item) => item.id === line.sku);
+    return {
+      id: line.sku,
+      name: line.name,
+      price: line.unitPrice,
+      quantity: line.qty,
+      ...(match?.brand ? { brand: match.brand } : {}),
+      ...(match?.categories?.length ? { categories: match.categories } : {}),
+      ...(match?.variant ? { variant: match.variant } : {}),
+    };
+  });
 }
 
 export function itemsValue(items: TrackItem[]): number {

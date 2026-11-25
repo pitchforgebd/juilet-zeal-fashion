@@ -59,6 +59,8 @@ export type Product = {
 export type Category = {
   slug: string;
   name: string;
+  /** Set for sub-categories; top-level categories leave it out. */
+  parentSlug?: string;
   description: string;
   seoText: string;
   hue: number;
@@ -105,7 +107,7 @@ export type CmsPage = {
 
 export type DeliveryArea = "inside-dhaka" | "outside-dhaka";
 
-export type PaymentMethod = "cod" | "bkash" | "nagad" | "rocket" | "card";
+export type PaymentMethod = "cod" | "bkash" | "nagad" | "rocket" | "card" | "qr";
 
 export type OrderStatus =
   | "Pending"

@@ -6,39 +6,46 @@ type LogoProps = {
   className?: string;
   name?: string;
   logoUrl?: string;
+  /** Light wordmark for black surfaces (footer, drawers on ink). */
+  tone?: "dark" | "light";
 };
 
-export function Logo({ className, name = siteConfig.name, logoUrl = "" }: LogoProps) {
-  const wordmark = name === "UniBaazar";
+export function Logo({
+  className,
+  name = siteConfig.name,
+  logoUrl = "",
+  tone = "dark",
+}: LogoProps) {
   return (
     <Link
       href="/"
       aria-label={name}
-      className={cn("inline-flex shrink-0 items-center gap-2", className)}
+      className={cn("inline-flex shrink-0 items-center gap-3", className)}
     >
       {logoUrl ? (
         <span
           aria-hidden="true"
-          className="h-9 w-9 rounded-md bg-cover bg-center"
+          className="h-10 w-10 bg-cover bg-center"
           style={{ backgroundImage: `url("${logoUrl.replace(/"/g, "")}")` }}
         />
-      ) : (
+      ) : null}
+      <span className="flex flex-col leading-none">
         <span
-          aria-hidden="true"
-          className="grid h-9 w-9 place-items-center rounded-md bg-primary text-base font-bold text-white"
+          className={cn(
+            "font-heading text-lg font-medium tracking-[0.22em] uppercase sm:text-xl",
+            tone === "light" ? "text-white" : "text-ink",
+          )}
         >
-          {name.slice(0, 1)}
+          {name}
         </span>
-      )}
-      <span className="text-xl font-bold tracking-tight">
-        {wordmark ? (
-          <>
-            <span className="text-primary">Uni</span>
-            <span className="text-ink">Baazar</span>
-          </>
-        ) : (
-          <span className="text-ink">{name}</span>
-        )}
+        <span
+          className={cn(
+            "mt-1 text-[11px] tracking-[0.2em] uppercase",
+            tone === "light" ? "text-white/60" : "text-muted",
+          )}
+        >
+          Fashion House
+        </span>
       </span>
     </Link>
   );

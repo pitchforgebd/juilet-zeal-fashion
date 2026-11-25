@@ -50,6 +50,12 @@ const storefrontContentSecurityPolicy = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // pino-pretty (dev logging, src/lib/logger.ts) runs in a worker thread
+  // that thread-stream loads from `lib/worker.js` by file path. Bundled
+  // into .next/server/vendor-chunks, that path doesn't exist and every log
+  // call crashed the worker ("Cannot find module …vendor-chunks/lib/
+  // worker.js"). Loading these from node_modules keeps the path real.
+  serverExternalPackages: ["pino", "pino-pretty", "thread-stream"],
   // Deliberately not "standalone": this project runs via its own root
   // server.js against a full `npm install`, not the trimmed
   // .next/standalone bundle, so standalone mode only adds pure overhead

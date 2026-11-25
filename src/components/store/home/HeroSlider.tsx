@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { revealVariants, usePrefersReducedMotion } from "@/components/motion";
-import { focusRing } from "@/components/ui/buttonStyles";
+import { ctaArrow, ctaPrimary, ctaSecondary } from "@/components/store/home/cta";
 import { cn } from "@/lib/utils/cn";
 
 export type HeroSlide = {
@@ -18,6 +18,16 @@ export type HeroSlide = {
   imageHue: number | null;
 };
 
+const arrowButton =
+  "grid size-10 place-items-center rounded-[10px] border border-white/20 text-white/80 transition-colors duration-fast ease-standard hover:border-white/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
+
+/**
+ * Full-bleed campaign slider: each slide's photo (Admin → Banners) fills
+ * the hero behind the copy, and changing slide crossfades the photo and
+ * swaps the text. A slide without a photo shows the plain warm-black
+ * surface. The dark fade on the text side keeps white copy readable over
+ * any photo.
+ */
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const t = useTranslations("home");
   const reduced = usePrefersReducedMotion();
@@ -37,7 +47,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     const timer = window.setInterval(() => {
       setAdvanced(true);
       setIndex((current) => (current + 1) % slides.length);
-    }, 5000);
+    }, 7000);
     return () => window.clearInterval(timer);
   }, [slides.length, paused]);
 
@@ -45,12 +55,17 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     return null;
   }
 
-  const slide = slides[Math.min(index, slides.length - 1)];
-  const hue = slide.imageHue ?? 24;
+  const current = Math.min(index, slides.length - 1);
+  const slide = slides[current];
+  const go = (next: number) => {
+    setAdvanced(true);
+    setIndex((next + slides.length) % slides.length);
+  };
 
   return (
-    <div
-      className="relative isolate flex min-h-64 flex-col justify-end overflow-hidden rounded-theme p-6 text-white shadow-soft sm:min-h-80 sm:p-10 lg:min-h-96"
+    <section
+      aria-roledescription="carousel"
+      className="relative isolate overflow-hidden bg-[#151213] text-white"
       onPointerEnter={() => setPaused(true)}
       onPointerLeave={() => setPaused(false)}
       onFocus={() => setPaused(true)}
@@ -59,97 +74,110 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           setPaused(false);
         }
       }}
-      style={
-        slide.imageUrl
-          ? {
-              backgroundImage: `url(${slide.imageUrl})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }
-          : // 24% lightness, not the more vivid 42% this used to be: at
-            // 72% saturation, white text on *any* hue needs lightness
-            // this low to clear 4.5:1 — hue 60 (yellow) is the worst
-            // case, and still only reaches ~5.8:1 at 24%.
-            { backgroundColor: `hsl(${hue} 72% 24%)` }
-      }
     >
+      {/* Every slide's photo stays mounted and stacked, so a slide change is
+       * an opacity crossfade between already-loaded images. */}
+      {slides.map((item, itemIndex) =>
+        item.imageUrl ? (
+          <div
+            key={item.id}
+            role="img"
+            aria-label={item.title}
+            aria-hidden={itemIndex !== current}
+            className={cn(
+              "absolute inset-0 -z-20 bg-cover bg-center transition-opacity duration-page ease-standard motion-reduce:transition-none",
+              itemIndex === current ? "opacity-100" : "opacity-0",
+            )}
+            style={{ backgroundImage: `url(${item.imageUrl})` }}
+          />
+        ) : null,
+      )}
       {slide.imageUrl ? (
-        // Darkest where the copy sits (start edge, at least the old flat
-        // black/35 everywhere), easing off toward the far edge.
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-linear-to-r from-black/60 via-black/40 to-black/35 rtl:bg-linear-to-l"
+          className="absolute inset-0 -z-10 bg-linear-to-r from-black/70 via-black/35 to-black/10 rtl:bg-linear-to-l"
         />
-      ) : (
-        // Outline-only rings: decorative depth on the flat fallback
-        // without lightening the background behind the text.
-        <div aria-hidden="true" className="absolute inset-0 -z-10">
-          <span className="absolute -inset-e-16 -top-16 size-64 rounded-full border-28 border-white/5" />
-          <span className="absolute -inset-e-4 -bottom-24 size-48 rounded-full border-18 border-white/5" />
-        </div>
-      )}
-      <motion.div
-        key={slide.id}
-        variants={revealVariants("up", reduced)}
-        initial={advanced ? "hidden" : false}
-        animate="visible"
-      >
-        <p className="text-xs font-semibold tracking-[0.2em] text-white/90 uppercase">
-          UniBaazar
-        </p>
-        <h2 className="mt-3 max-w-xl font-heading text-3xl leading-tight font-bold text-balance sm:text-5xl">
-          {slide.title}
-        </h2>
-        {slide.subtitle ? (
-          <p className="mt-3 max-w-md text-sm text-white/90 sm:text-base">
-            {slide.subtitle}
-          </p>
-        ) : null}
-        <Link
-          href={slide.href}
-          className={cn(
-            "group mt-6 inline-flex h-12 items-center gap-2 rounded-theme bg-white px-5 text-sm font-semibold text-black",
-            "transition-transform duration-fast ease-standard active:scale-97 motion-reduce:active:scale-100",
-            focusRing,
-            "focus-visible:outline-white",
-          )}
+      ) : null}
+
+      <div className="mx-auto flex w-full max-w-container flex-col justify-center px-4 pt-20 pb-32 lg:min-h-[clamp(560px,74vh,720px)] lg:pt-24 lg:pb-36">
+        <motion.div
+          key={slide.id}
+          variants={revealVariants("up", reduced)}
+          initial={advanced ? "hidden" : false}
+          animate="visible"
+          className="max-w-2xl"
         >
-          {t("shopNow")}
-          <ArrowRight
-            aria-hidden="true"
-            className="size-4 transition-transform duration-base ease-standard group-hover:translate-x-0.5 motion-reduce:transition-none rtl:rotate-180"
-          />
-        </Link>
-      </motion.div>
+          <p className="text-sm text-white/70">{t("heroEyebrow")}</p>
+          <h2 className="mt-4 max-w-[18ch] font-heading text-[2.5rem] leading-[1.05] font-normal tracking-[-0.02em] text-balance sm:text-[3.5rem] lg:text-[4.25rem] lg:tracking-[-0.03em]">
+            {slide.title}
+          </h2>
+          {slide.subtitle ? (
+            <p className="mt-6 max-w-[34rem] text-lg leading-[1.6] text-white/80">
+              {slide.subtitle}
+            </p>
+          ) : null}
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href={slide.href} className={ctaPrimary}>
+              {t("shopNow")}
+              <ArrowRight aria-hidden="true" strokeWidth={1.5} className={ctaArrow} />
+            </Link>
+            <Link href="/shop?sort=newest" className={ctaSecondary}>
+              {t("heroSecondary")}
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+
       {slides.length > 1 ? (
-        <div className="mt-6 flex gap-2">
-          {slides.map((item, itemIndex) => (
+        <div className="absolute inset-x-0 bottom-16 mx-auto flex w-full max-w-container items-center gap-4 px-4 lg:bottom-20">
+          <div className="flex gap-1">
+            {slides.map((item, itemIndex) => (
+              <button
+                key={item.id}
+                type="button"
+                aria-label={t("showSlide", { number: itemIndex + 1 })}
+                aria-pressed={itemIndex === current}
+                onClick={() => go(itemIndex)}
+                className="grid h-6 min-w-6 place-items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "block h-0.5 w-6 rounded-full transition-colors duration-base ease-standard",
+                    itemIndex === current ? "bg-white" : "bg-white/30",
+                  )}
+                />
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-2">
             <button
-              key={item.id}
               type="button"
-              aria-label={t("showSlide", { number: itemIndex + 1 })}
-              aria-pressed={itemIndex === index}
-              onClick={() => {
-                setAdvanced(true);
-                setIndex(itemIndex);
-              }}
-              className={cn(
-                "grid h-6 min-w-6 place-items-center rounded-full px-1",
-                focusRing,
-                "focus-visible:outline-white",
-              )}
+              aria-label={t("prevSlide")}
+              onClick={() => go(current - 1)}
+              className={arrowButton}
             >
-              <span
+              <ArrowLeft
                 aria-hidden="true"
-                className={cn(
-                  "block h-2.5 rounded-full transition-[width,background-color] duration-base ease-standard motion-reduce:transition-none",
-                  itemIndex === index ? "w-6 bg-white" : "w-2.5 bg-white/50",
-                )}
+                strokeWidth={1.5}
+                className="size-4 rtl:rotate-180"
               />
             </button>
-          ))}
+            <button
+              type="button"
+              aria-label={t("nextSlide")}
+              onClick={() => go(current + 1)}
+              className={arrowButton}
+            >
+              <ArrowRight
+                aria-hidden="true"
+                strokeWidth={1.5}
+                className="size-4 rtl:rotate-180"
+              />
+            </button>
+          </div>
         </div>
       ) : null}
-    </div>
+    </section>
   );
 }

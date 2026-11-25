@@ -823,13 +823,14 @@ Http::timeout(5)->withHeaders(['Access-Token' => $tiktokToken])
 | `src/lib/tracking/googleSnippet.ts`                           | `<head>`-এর Google script (§৩.১), দুটো data layer                     |
 | `src/lib/tracking/vendors.ts`                                 | Meta/TikTok/Pinterest/Snap/Clarity/Hotjar pixel loader                |
 | `src/lib/tracking/customer.ts`                                | Purchase-এর customer data + hash                                      |
-| `src/lib/tracking/events.ts`                                  | `trackPurchase()`, একবারই                                             |
+| `src/lib/tracking/events.ts`                                  | `trackPurchase()`, একবারই; checkout-এর item (category সহ) মনে রাখে    |
 | `src/lib/tracking/fbclid.ts`                                  | `fbclid`/`ttclid` ধরে রাখা, `_fbp`/`_fbc`/`_ttp` পড়া                 |
 | `src/lib/tracking/cart.ts`                                    | Cart line → item                                                      |
 | `src/components/layout/TrackingTags.tsx`                      | `<head>` আর `<body>`-এ tag render (server-side, raw HTML-এ দেখা যায়) |
 | `src/components/store/tracking/StorePixels.tsx`               | Consent অনুযায়ী pixel চালু, PageView                                 |
 | `src/components/store/tracking/TrackOnce.tsx`                 | Page-এ একবার event (ViewContent, ViewCart ইত্যাদি)                    |
 | `src/components/store/tracking/SelectItemTracker.tsx`         | List থেকে product click → `select_item`                               |
+| `src/components/store/tracking/TrackedList.tsx`               | যেকোনো product list: `view_item_list` + `select_item` একসাথে          |
 | `src/app/api/v1/tracking/route.ts`                            | Browser event গ্রহণ, server relay                                     |
 | `src/server/tracking/capi.ts`                                 | Meta/TikTok server payload, hash, phone normalization                 |
 | `src/server/tracking/signals.ts`                              | পাঠানো, log, retry                                                    |

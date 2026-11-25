@@ -182,8 +182,8 @@ describe("resolveVariant", () => {
   });
 
   it("handles a simple product with no attributes", () => {
-    const buds = products.find((product) => product.slug === "redmi-buds-4");
-    expect(buds?.variants.length).toBe(1);
-    expect(buds?.variants[0]?.attributes).toEqual({});
+    const earrings = products.find((product) => product.slug === "pearl-drop-earrings");
+    expect(earrings?.variants.length).toBe(1);
+    expect(earrings?.variants[0]?.attributes).toEqual({});
   });
 });

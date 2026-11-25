@@ -16,6 +16,7 @@ const RADIUS_PX: Record<ThemeTokens["radius"], string> = {
 };
 
 const HEADING_FONT_VAR: Record<ThemeTokens["heading"], string> = {
+  jost: "var(--font-jost)",
   poppins: "var(--font-poppins)",
   playfair: "var(--font-playfair)",
 };

@@ -256,68 +256,6 @@ export async function deleteFlashSale(actorId: string, id: string): Promise<stri
   return "Flash sale removed.";
 }
 
-export async function listBanners() {
-  const rows = await prisma.banner.findMany({
-    orderBy: [{ placement: "asc" }, { sortOrder: "asc" }],
-    take: 50,
-  });
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    subtitle: row.subtitle ?? "",
-    href: row.href,
-    imageUrl: row.imageUrl ?? "",
-    placement: row.placement,
-    sortOrder: row.sortOrder,
-    isActive: row.isActive,
-  }));
-}
-
-export async function saveBanner(
-  actorId: string,
-  input: {
-    id?: string;
-    title: string;
-    subtitle: string;
-    href: string;
-    imageUrl?: string;
-    placement: string;
-    sortOrder: string;
-    isActive: boolean;
-  },
-): Promise<string> {
-  const data = {
-    title: input.title,
-    subtitle: input.subtitle || null,
-    href: input.href,
-    imageUrl: input.imageUrl || null,
-    placement: input.placement,
-    sortOrder: optionalInt(input.sortOrder, "sort") ?? 0,
-    isActive: input.isActive,
-  };
-  const banner = input.id
-    ? await prisma.banner.update({ where: { id: input.id }, data })
-    : await prisma.banner.create({ data });
-  await recordAudit({
-    actorId,
-    action: "marketing.banner",
-    entityType: "Banner",
-    entityId: banner.id,
-  });
-  return "Banner saved.";
-}
-
-export async function deleteBanner(actorId: string, id: string): Promise<string> {
-  await prisma.banner.delete({ where: { id } });
-  await recordAudit({
-    actorId,
-    action: "marketing.banner.delete",
-    entityType: "Banner",
-    entityId: id,
-  });
-  return "Banner removed.";
-}
-
 export async function listSliders() {
   const rows = await prisma.slider.findMany({ orderBy: { sortOrder: "asc" }, take: 20 });
   return rows.map((row) => ({

@@ -22,7 +22,7 @@ export function QuickAdd({ product }: QuickAddProps) {
         void addToCart(product, { slug: product.slug, variantId: variant.id, qty: 1 })
       }
       disabled={disabled}
-      className="mt-3 h-9 w-full rounded-md bg-primary text-sm font-semibold text-white transition-transform duration-150 ease-out hover:bg-primary-dark active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+      className="h-10 w-full rounded-lg bg-ink text-sm font-medium text-white transition-[background-color,transform] duration-fast ease-standard hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-ink/60 disabled:active:scale-100"
     >
       {disabled ? t("out") : t("quickAdd")}
     </button>

@@ -157,18 +157,31 @@ export function toProduct(row: ProductRow): Product {
 
 export const listStoreCategories = unstable_cache(
   async (): Promise<
-    { slug: string; name: string; hue: number; imageUrl: string | null }[]
+    {
+      slug: string;
+      name: string;
+      hue: number;
+      imageUrl: string | null;
+      parentSlug: string | null;
+    }[]
   > => {
     const rows = await prisma.category.findMany({
       where: { isActive: true },
       orderBy: { sortOrder: "asc" },
-      select: { slug: true, name: true, imageHue: true, imageUrl: true },
+      select: {
+        slug: true,
+        name: true,
+        imageHue: true,
+        imageUrl: true,
+        parent: { select: { slug: true } },
+      },
     });
     return rows.map((row) => ({
       slug: row.slug,
       name: row.name,
       hue: row.imageHue ?? 0,
       imageUrl: row.imageUrl,
+      parentSlug: row.parent?.slug ?? null,
     }));
   },
   ["store-categories"],

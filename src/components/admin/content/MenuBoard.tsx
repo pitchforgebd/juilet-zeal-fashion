@@ -15,7 +15,7 @@ type MenuRow = {
 
 export function MenuBoard({ menus }: { menus: MenuRow[] }) {
   const router = useRouter();
-  const [location, setLocation] = useState("footer");
+  const [location, setLocation] = useState("footer-service");
   const [label, setLabel] = useState("");
   const [href, setHref] = useState("/");
   const [message, setMessage] = useState("");
@@ -63,10 +63,10 @@ export function MenuBoard({ menus }: { menus: MenuRow[] }) {
             value={location}
             onChange={(event) => setLocation(event.target.value)}
           >
-            <option value="header">Header</option>
-            <option value="footer">Footer</option>
-            <option value="mobile">Mobile</option>
-            <option value="footer-service">Footer service</option>
+            {/* Only the footer columns read admin menus — the header and
+             * mobile menus are built from categories. */}
+            <option value="footer-service">Footer — Customer service</option>
+            <option value="footer">Footer — Useful links</option>
           </Select>
         </div>
         <Input

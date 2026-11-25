@@ -28,6 +28,10 @@ export default async function CheckoutSettingsPage() {
           minOrder: String(values.minOrder),
           cod: values.cod,
           orderPrefix: values.orderPrefix,
+          qrEnabled: values.qrEnabled,
+          qrImage: values.qrImage,
+          qrAccount: values.qrAccount,
+          qrNote: values.qrNote,
         }}
         save={checkoutAction}
         fields={[
@@ -37,7 +41,42 @@ export default async function CheckoutSettingsPage() {
           { name: "minOrder", label: "Minimum order", kind: "number" },
           { name: "orderPrefix", label: "Order ID prefix", kind: "text" },
           { name: "guest", label: "Allow guest checkout", kind: "checkbox" },
-          { name: "cod", label: "Allow cash on delivery", kind: "checkbox" },
+          {
+            name: "cod",
+            label: "Allow cash on delivery",
+            kind: "checkbox",
+            section: "Payment methods",
+            sectionIntro:
+              "Each method is switched on separately, so any combination can show at checkout. Online payment (SSLCommerz: bKash, Nagad, Rocket and cards) appears once its keys are saved in Settings → Integrations.",
+          },
+          {
+            name: "qrEnabled",
+            label: "Allow QR payment",
+            kind: "checkbox",
+            section: "Payment methods",
+            hint: "The customer scans your QR, pays, then enters their number and the transaction ID. Verify it on the order before confirming.",
+          },
+          {
+            name: "qrImage",
+            label: "QR code image",
+            kind: "image",
+            section: "Payment methods",
+            hint: "Required before QR payment can be turned on.",
+          },
+          {
+            name: "qrAccount",
+            label: "QR account name or number",
+            kind: "text",
+            section: "Payment methods",
+            hint: "Shown under the code, e.g. bKash merchant · 01XXXXXXXXX",
+          },
+          {
+            name: "qrNote",
+            label: "QR payment note",
+            kind: "textarea",
+            section: "Payment methods",
+            hint: "Optional, e.g. which apps can scan it.",
+          },
         ]}
       />
     </div>

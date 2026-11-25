@@ -1,6 +1,6 @@
-export type ThemePresetId = "bazaar" | "luxe" | "fresh" | "tech";
+export type ThemePresetId = "juliet" | "bazaar" | "luxe" | "fresh" | "tech";
 
-export type HeadingFont = "poppins" | "playfair";
+export type HeadingFont = "jost" | "poppins" | "playfair";
 
 export type ThemeTokens = {
   /** Brand accent — buttons, links, active states. */
@@ -27,10 +27,35 @@ export type ThemeTokens = {
   heading: HeadingFont;
 };
 
-export const THEME_PRESET_IDS: ThemePresetId[] = ["bazaar", "luxe", "fresh", "tech"];
+export const THEME_PRESET_IDS: ThemePresetId[] = [
+  "juliet",
+  "bazaar",
+  "luxe",
+  "fresh",
+  "tech",
+];
 
 export const THEME_PRESETS: Record<ThemePresetId, ThemeTokens> = {
-  // Default. Warm orange, light theme — the brand's existing identity.
+  // Default — Juliet's Zeal Fashion House. Near-black primary (buttons,
+  // links) on a warm ivory page, with a muted dusty-rose accent rather
+  // than a saturated pink. Soft rounded corners (after the Noora concept)
+  // and Jost throughout keep it minimal. The decorative rose tints used on black surfaces (petal,
+  // blush, mauve) are fixed brand colors in tailwind.config.ts, not
+  // preset tokens.
+  juliet: {
+    primary: "#151314",
+    primaryDark: "#000000",
+    primaryLight: "#F3E4E7",
+    accent: "#9C4A5E",
+    ink: "#0C0B0B",
+    page: "#FAF6F5",
+    card: "#FFFFFF",
+    foreground: "#1D1A1B",
+    muted: "#6B6064",
+    radius: "lg",
+    heading: "jost",
+  },
+  // Warm orange, light theme — the original UniBaazar identity.
   bazaar: {
     primary: "#AA3B06",
     primaryDark: "#A33805",

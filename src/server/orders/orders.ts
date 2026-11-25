@@ -7,13 +7,49 @@ import { assertCheckoutAllowed, noteDeviceOrder } from "@/server/security/fraud"
 import { ApiError } from "@/server/http";
 import { readSession } from "@/server/auth/session";
 import { areaToDb, paymentToDb, quoteCart } from "@/server/checkout/quote";
-import { loadCheckout } from "@/server/settings/store";
+import { loadCheckout, type CheckoutSettings } from "@/server/settings/store";
 import { TRACKING_CURRENCY } from "@/lib/tracking/ecommerce";
 import { signalPurchase } from "@/server/tracking/signals";
 import { commitStock } from "@/modules/inventory";
 import { incrementFlashSold } from "@/modules/inventory/server/flash";
 import { StockUnavailableError, FlashLimitReachedError } from "@/modules/inventory/types";
 import { canTransition, transitionOrder } from "@/modules/orders";
+import { isOnlinePaymentConfigured } from "@/lib/payment/sslcommerz";
+import { QR_TRANSACTION_ID } from "@/lib/validation/customer";
+
+/**
+ * Re-checks a QR payment server-side: QR must be switched on, the payer
+ * number must be a real BD mobile, and the transaction ID must not already
+ * be attached to another live payment (one transfer can't pay two orders).
+ */
+export async function qrPaymentDetails(
+  input: { qrPayerNumber?: string; qrTransactionId?: string },
+  checkout: CheckoutSettings,
+): Promise<{ payerNumber: string; transactionId: string }> {
+  if (!checkout.qrEnabled) {
+    throw new ApiError(400, "QR payment is turned off");
+  }
+  const payerNumber = normalizeBdPhone(input.qrPayerNumber ?? "");
+  if (!payerNumber) {
+    throw new ApiError(400, "Enter the number you paid from");
+  }
+  const transactionId = (input.qrTransactionId ?? "").trim().toUpperCase();
+  if (!QR_TRANSACTION_ID.test(transactionId)) {
+    throw new ApiError(400, "Enter the transaction ID from your payment");
+  }
+  const reused = await prisma.payment.findFirst({
+    where: {
+      method: "QR",
+      gatewayRef: transactionId,
+      status: { notIn: ["FAILED", "CANCELLED"] },
+    },
+    select: { id: true },
+  });
+  if (reused) {
+    throw new ApiError(409, "This transaction ID has already been used");
+  }
+  return { payerNumber, transactionId };
+}
 
 const statusLabel: Record<DbStatus, OrderStatus> = {
   PENDING: "Pending",
@@ -148,6 +184,9 @@ export async function placeOrder(
     address: string;
     area: DeliveryArea;
     paymentMethod: PaymentMethod;
+    /** paymentMethod "qr" only — validated again below, never trusted. */
+    qrPayerNumber?: string;
+    qrTransactionId?: string;
     lines: { slug: string; variantId: string; qty: number }[];
     couponCode?: string;
     utmSource?: string;
@@ -187,6 +226,15 @@ export async function placeOrder(
   }
   if (!checkout.cod && input.paymentMethod === "cod") {
     throw new ApiError(400, "Cash on delivery is turned off");
+  }
+  const qr =
+    input.paymentMethod === "qr" ? await qrPaymentDetails(input, checkout) : null;
+  if (
+    input.paymentMethod !== "cod" &&
+    input.paymentMethod !== "qr" &&
+    !(await isOnlinePaymentConfigured())
+  ) {
+    throw new ApiError(400, "Online payment is turned off");
   }
   if (checkout.minOrder > 0 && quote.subtotal < checkout.minOrder) {
     throw new ApiError(400, `The minimum order is ${checkout.minOrder}`);
@@ -258,6 +306,17 @@ export async function placeOrder(
                 method: paymentToDb[input.paymentMethod],
                 status: "PENDING",
                 amount: quote.total,
+                // QR: the transaction ID is the reference an admin checks
+                // against their bKash/Nagad statement before confirming.
+                ...(qr
+                  ? {
+                      gatewayRef: qr.transactionId,
+                      payload: {
+                        payerNumber: qr.payerNumber,
+                        transactionId: qr.transactionId,
+                      },
+                    }
+                  : {}),
               },
             },
           },

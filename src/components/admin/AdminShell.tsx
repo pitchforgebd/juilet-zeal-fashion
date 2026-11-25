@@ -1,197 +1,50 @@
 "use client";
 
-import type { ComponentType, ReactNode } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Boxes,
-  FileText,
-  FolderTree,
-  HelpCircle,
-  LayoutDashboard,
-  type LucideProps,
-  Megaphone,
-  Package,
-  Ruler,
-  Search,
-  Settings as SettingsIcon,
-  ShoppingCart,
-  SlidersHorizontal,
-  Star,
-  Tag,
-  Tags,
-  Activity,
-  TrendingUp,
-  UserCog,
-  Users,
-  Wrench,
-} from "lucide-react";
+import type { ReactNode } from "react";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 import { NotificationBell } from "@/components/admin/NotificationBell";
-import { focusRing } from "@/components/ui/buttonStyles";
-import { cn } from "@/lib/utils/cn";
+import { AdminMobileMenu } from "./AdminMobileMenu";
+import { AdminNavList } from "./AdminNavList";
+import { buildAdminNav, type AdminPermissions } from "./adminNav";
 
-type NavLink = { href: string; label: string; icon: ComponentType<LucideProps> };
-type NavGroup = { label: string; links: NavLink[] };
-
-const catalogLinks: NavLink[] = [
-  { href: "/admin/products", label: "Products", icon: Boxes },
-  { href: "/admin/categories", label: "Categories", icon: FolderTree },
-  { href: "/admin/brands", label: "Brands", icon: Tag },
-  { href: "/admin/attributes", label: "Attributes", icon: SlidersHorizontal },
-  { href: "/admin/units", label: "Units", icon: Ruler },
-  { href: "/admin/labels", label: "Labels", icon: Tags },
-  { href: "/admin/tags", label: "Tags", icon: Tags },
-  { href: "/admin/reviews", label: "Reviews", icon: Star },
-  { href: "/admin/questions", label: "Questions", icon: HelpCircle },
-];
-
+/**
+ * The admin frame. From `md` up: a fixed sidebar beside the page. Below it:
+ * a sticky top bar with a menu button that opens the same navigation in a
+ * drawer (AdminMobileMenu), so phones get the full grouped menu instead of a
+ * sideways strip of links.
+ */
 export function AdminShell({
   name,
-  canCatalog,
-  canOrders,
-  canCustomers,
-  canContent,
-  canReports,
-  canSettings,
-  canUsers,
-  canMaintenance,
+  storeName,
   children,
-}: {
+  ...permissions
+}: AdminPermissions & {
+  /** The signed-in staff member. */
   name: string;
-  canCatalog: boolean;
-  canOrders: boolean;
-  canCustomers: boolean;
-  canContent: boolean;
-  canReports: boolean;
-  canSettings: boolean;
-  canUsers: boolean;
-  canMaintenance: boolean;
+  /** The store's name from Settings → General. */
+  storeName: string;
   children: ReactNode;
 }) {
-  const pathname = usePathname();
-  const groups: NavGroup[] = [
-    {
-      label: "Overview",
-      links: [{ href: "/admin", label: "Dashboard", icon: LayoutDashboard }],
-    },
-    ...(canOrders
-      ? [
-          {
-            label: "Sales",
-            links: [{ href: "/admin/orders", label: "Orders", icon: ShoppingCart }],
-          },
-        ]
-      : []),
-    ...(canCustomers
-      ? [
-          {
-            label: "Customers",
-            links: [{ href: "/admin/customers", label: "Customers", icon: Users }],
-          },
-        ]
-      : []),
-    ...(canCatalog
-      ? [
-          {
-            label: "Catalog",
-            links: [
-              { href: "/admin/inventory", label: "Inventory", icon: Package },
-              { href: "/admin/marketing", label: "Marketing", icon: Megaphone },
-              ...catalogLinks,
-            ],
-          },
-        ]
-      : []),
-    ...(canReports
-      ? [
-          {
-            label: "Insights",
-            links: [
-              { href: "/admin/reports", label: "Reports", icon: Activity },
-              { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
-            ],
-          },
-        ]
-      : []),
-    ...(canContent
-      ? [
-          {
-            label: "Content",
-            links: [{ href: "/admin/content", label: "Content", icon: FileText }],
-          },
-        ]
-      : []),
-    ...(canUsers
-      ? [
-          {
-            label: "Team",
-            links: [{ href: "/admin/users", label: "Users", icon: UserCog }],
-          },
-        ]
-      : []),
-    ...(canSettings
-      ? [
-          {
-            label: "Settings",
-            links: [
-              { href: "/admin/settings", label: "Settings", icon: SettingsIcon },
-              { href: "/admin/tracking", label: "Tracking", icon: Activity },
-              { href: "/admin/seo", label: "SEO", icon: Search },
-            ],
-          },
-        ]
-      : []),
-    ...(canMaintenance
-      ? [
-          {
-            label: "Maintenance",
-            links: [{ href: "/admin/maintenance", label: "Maintenance", icon: Wrench }],
-          },
-        ]
-      : []),
-  ];
+  const groups = buildAdminNav(permissions);
 
   return (
     <div className="min-h-screen bg-page md:grid md:grid-cols-[220px_minmax(0,1fr)]">
-      <aside className="bg-ink text-white print:hidden">
-        <p className="px-4 py-4 text-lg font-semibold">UniBaazar</p>
-        <nav className="flex gap-2 overflow-x-auto px-3 pb-4 md:block md:space-y-4 md:px-2">
-          {groups.map((group) => (
-            <div key={group.label} className="md:space-y-1">
-              <p className="hidden px-3 pb-1 text-xs font-semibold uppercase tracking-wide text-white/40 md:block">
-                {group.label}
-              </p>
-              {group.links.map((link) => {
-                const active =
-                  link.href === "/admin"
-                    ? pathname === "/admin"
-                    : pathname.startsWith(link.href);
-                const Icon = link.icon;
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "flex items-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm transition-colors duration-fast ease-standard",
-                      active ? "bg-white/15" : "hover:bg-white/10",
-                      focusRing,
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    {link.label}
-                  </Link>
-                );
-              })}
-            </div>
-          ))}
-        </nav>
+      <aside className="hidden bg-ink text-white md:block print:hidden">
+        <p className="px-4 py-4 text-lg font-semibold">{storeName}</p>
+        <AdminNavList groups={groups} />
       </aside>
       <div className="min-w-0">
-        <header className="flex items-center justify-between border-b border-black/5 bg-card px-4 py-3 print:hidden">
-          <p className="text-sm font-semibold text-ink">{name}</p>
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-black/5 bg-card px-2 py-2 sm:px-4 md:static md:py-3 print:hidden">
+          <div className="flex min-w-0 items-center gap-1">
+            <AdminMobileMenu storeName={storeName} groups={groups} />
+            <p className="truncate text-sm font-semibold text-ink md:hidden">
+              {storeName}
+            </p>
+            <p className="hidden truncate text-sm font-semibold text-ink md:block">
+              {name}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <NotificationBell />
             <LogoutButton />
           </div>

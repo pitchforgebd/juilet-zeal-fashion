@@ -31,11 +31,3 @@ export function youtubeEmbedId(value: string): string | null {
   }
   return null;
 }
-
-export function instagramPostUrls(raw: string): string[] {
-  return raw
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith("http") && line.includes("instagram.com"))
-    .slice(0, 6);
-}

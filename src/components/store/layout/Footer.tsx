@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Clock, Mail, MapPin } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { siteConfig, type SiteLink, type SocialName } from "@/config/site";
@@ -6,14 +7,11 @@ import { Container } from "@/components/ui/Container";
 import {
   FacebookIcon,
   InstagramIcon,
-  MailIcon,
-  PhoneIcon,
-  PinIcon,
   WhatsAppIcon,
   YouTubeIcon,
 } from "@/components/store/layout/icons";
 import { Logo } from "@/components/store/layout/Logo";
-import { NewsletterForm } from "@/components/store/layout/NewsletterForm";
+import { menuLinks } from "@/server/cms/public";
 
 const socialIcons: Record<SocialName, ReactNode> = {
   Facebook: <FacebookIcon />,
@@ -22,62 +20,25 @@ const socialIcons: Record<SocialName, ReactNode> = {
   WhatsApp: <WhatsAppIcon />,
 };
 
+const footerLink =
+  "text-sm text-white/70 transition-colors duration-fast ease-standard hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
+
+const footerHeading = "text-sm font-medium text-white";
+
+const contactIcon = "mt-0.5 size-4 shrink-0 text-white/50";
+
 function FooterLinks({ title, links }: { title: string; links: SiteLink[] }) {
   return (
     <div>
-      <h2 className="text-sm font-semibold text-ink">{title}</h2>
-      <ul className="mt-4 space-y-2.5">
+      <h2 className={footerHeading}>{title}</h2>
+      <ul className="mt-4 space-y-3">
         {links.map((link) => (
-          <li key={link.href}>
-            <Link
-              href={link.href}
-              className="text-sm text-muted hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            >
+          <li key={link.id}>
+            <Link href={link.href} className={footerLink}>
               {link.label}
             </Link>
           </li>
         ))}
-      </ul>
-    </div>
-  );
-}
-
-const brandColors: Record<string, string> = {
-  bKash: "#E2136E",
-  Nagad: "#F7941D",
-  Rocket: "#8C3494",
-  Visa: "#1A1F71",
-  Mastercard: "#EB001B",
-  Amex: "#2E77BB",
-  COD: "#1F7A0F",
-  Pathao: "#E4452C",
-  Steadfast: "#0B5ED7",
-  RedX: "#ED1C24",
-  iEX: "#0F9D58",
-};
-
-function BrandRow({ title, items }: { title: string; items: string[] }) {
-  return (
-    <div>
-      <h2 className="text-sm font-semibold text-ink">{title}</h2>
-      <ul className="mt-3 flex flex-wrap gap-2">
-        {items.map((item) => {
-          const color = brandColors[item] ?? "#374151";
-          return (
-            <li
-              key={item}
-              style={{ borderLeftColor: color }}
-              className="flex h-9 items-center rounded-md border border-black/10 border-l-[3px] bg-white px-3 text-xs font-bold shadow-soft"
-            >
-              {/* The border carries the brand color (decorative, so WCAG's
-               * 3:1 non-text minimum applies and every brand clears it);
-               * the label itself stays a fixed dark gray — several brand
-               * colors here (Pathao, RedX, iEX) fail the 4.5:1 text
-               * minimum against this box's white background. */}
-              <span style={{ color: "#1F2937" }}>{item}</span>
-            </li>
-          );
-        })}
       </ul>
     </div>
   );
@@ -105,104 +66,107 @@ export async function Footer({
   const year = new Date().getFullYear();
   const t = await getTranslations("footer");
   const links = await getTranslations("links");
-  const customerLinks = siteConfig.customerServiceLinks.map((link) => ({
-    ...link,
-    label: links(link.id),
-  }));
-  const useful = siteConfig.usefulLinks.map((link) => ({
-    ...link,
-    label: links(link.id),
-  }));
+  // Admin → Content → Menus ("footer-service" and "footer") drive these two
+  // columns; without a menu they fall back to the built-in links. A link
+  // whose label is still a built-in page's default English label is shown
+  // translated (so the Bengali storefront isn't English); a label the admin
+  // typed themselves is shown as typed.
+  const builtIn = [...siteConfig.customerServiceLinks, ...siteConfig.usefulLinks];
+  const translatedLabel = (link: { label: string; href: string }) => {
+    const match = builtIn.find(
+      (item) =>
+        item.href === link.href &&
+        item.label.trim().toLowerCase() === link.label.trim().toLowerCase(),
+    );
+    return match ? links(match.id) : link.label;
+  };
+  const column = (menu: { label: string; href: string }[], fallback: SiteLink[]) =>
+    (menu.length > 0 ? menu : fallback).map((link, index) => ({
+      id: `${index}-${link.href}`,
+      href: link.href,
+      label: translatedLabel(link),
+    }));
+  const [serviceMenu, usefulMenu] = await Promise.all([
+    menuLinks("footer-service"),
+    menuLinks("footer"),
+  ]);
+  const customerLinks = column(serviceMenu, siteConfig.customerServiceLinks);
+  const useful = column(usefulMenu, siteConfig.usefulLinks);
+  const checkout = await getTranslations("checkout");
+  const payments = [checkout("paymentCod"), ...siteConfig.paymentMethods];
 
   return (
-    <footer className="mt-auto border-t border-black/5 bg-card">
-      <Container className="grid gap-8 py-10 sm:grid-cols-2 lg:grid-cols-4">
-        <div>
-          <Logo name={name} logoUrl={logoUrl} />
-          <p className="mt-4 text-sm leading-6 text-muted">{description}</p>
-          <ul className="mt-4 space-y-2 text-sm text-foreground">
-            <li className="flex items-center gap-2">
-              <PinIcon className="text-primary" />
-              {address}
-            </li>
-            {hours ? <li>{hours}</li> : null}
-            <li>
-              <a
-                href={`tel:${phone.replace(/[^\d+]/g, "")}`}
-                className="inline-flex items-center gap-2 hover:text-primary"
-              >
-                <PhoneIcon className="text-primary" />
-                {phone}
-              </a>
-            </li>
-            <li>
-              <a
-                href={`mailto:${email}`}
-                className="inline-flex items-center gap-2 hover:text-primary"
-              >
-                <MailIcon className="text-primary" />
-                {email}
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <FooterLinks title={t("customerService")} links={customerLinks} />
-        <FooterLinks title={t("usefulLinks")} links={useful} />
-
-        <div>
-          <h2 id="newsletter" className="scroll-mt-24 text-sm font-semibold text-ink">
-            {t("newsletter")}
-          </h2>
-          <p className="mt-3 text-sm text-muted">{t("newsletterText")}</p>
-          <NewsletterForm />
-
-          <h2 className="mt-6 text-sm font-semibold text-ink">{t("download")}</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-md border border-black/10 px-3 py-2 text-xs font-semibold text-muted">
-              Google Play
-            </span>
-            <span className="rounded-md border border-black/10 px-3 py-2 text-xs font-semibold text-muted">
-              App Store
-            </span>
+    <footer className="mt-auto">
+      <div className="bg-[#151213] text-white">
+        <Container className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] lg:py-20">
+          <div>
+            <Logo name={name} logoUrl={logoUrl} tone="light" />
+            <p className="mt-4 max-w-xs text-sm leading-6 text-white/70">{description}</p>
+            <ul className="mt-6 flex gap-2">
+              {social.map((link) => {
+                const className =
+                  "grid size-10 place-items-center rounded-[10px] border border-white/10 text-white/70 transition-colors duration-fast ease-standard hover:border-white/25 hover:text-white";
+                return (
+                  <li key={link.label}>
+                    {link.href && link.href !== "#" ? (
+                      <a href={link.href} className={className} title={link.label}>
+                        {socialIcons[link.label]}
+                        <span className="sr-only">{link.label}</span>
+                      </a>
+                    ) : (
+                      <span className={className} title={link.label}>
+                        {socialIcons[link.label]}
+                        <span className="sr-only">{link.label}</span>
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          <h2 className="mt-6 text-sm font-semibold text-ink">{t("follow")}</h2>
-          <ul className="mt-3 flex gap-2">
-            {social.map((link) => (
-              <li key={link.label}>
-                {link.href && link.href !== "#" ? (
-                  <a
-                    href={link.href}
-                    className="grid h-9 w-9 place-items-center rounded-md border border-black/10 text-ink"
-                    title={link.label}
-                  >
-                    {socialIcons[link.label]}
-                    <span className="sr-only">{link.label}</span>
-                  </a>
-                ) : (
-                  <span
-                    className="grid h-9 w-9 place-items-center rounded-md border border-black/10 text-ink"
-                    title={link.label}
-                  >
-                    {socialIcons[link.label]}
-                    <span className="sr-only">{link.label}</span>
-                  </span>
-                )}
+          <FooterLinks title={t("customerService")} links={customerLinks} />
+          <FooterLinks title={t("usefulLinks")} links={useful} />
+
+          <div>
+            <h2 className={footerHeading}>{t("contact")}</h2>
+            <a
+              href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+              className="mt-4 block font-heading text-2xl text-white tabular-nums transition-colors duration-fast ease-standard hover:text-white/80"
+            >
+              {phone}
+            </a>
+            <ul className="mt-4 space-y-3 text-sm text-white/70">
+              <li className="flex items-start gap-2">
+                <MapPin aria-hidden="true" strokeWidth={1.5} className={contactIcon} />
+                {address}
               </li>
-            ))}
-          </ul>
-        </div>
-      </Container>
+              {hours ? (
+                <li className="flex items-start gap-2">
+                  <Clock aria-hidden="true" strokeWidth={1.5} className={contactIcon} />
+                  {hours}
+                </li>
+              ) : null}
+              <li>
+                <a
+                  href={`mailto:${email}`}
+                  className="inline-flex items-start gap-2 transition-colors duration-fast ease-standard hover:text-white"
+                >
+                  <Mail aria-hidden="true" strokeWidth={1.5} className={contactIcon} />
+                  {email}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </Container>
 
-      <Container className="grid gap-6 border-t border-black/5 py-6 sm:grid-cols-2">
-        <BrandRow title={t("accept")} items={siteConfig.paymentMethods} />
-        <BrandRow title={t("delivery")} items={siteConfig.deliveryPartners} />
-      </Container>
-
-      <div className="bg-ink text-white">
-        <Container className="py-3 text-center text-xs sm:text-sm">
-          © {year} {name}. {t("rights")}
+        <Container className="flex flex-col gap-2 border-t border-white/8 py-6 text-[13px] text-white/50 sm:flex-row sm:items-center sm:justify-between">
+          <span>
+            © {year} {name}. {t("rights")}
+          </span>
+          <span>
+            {t("accept")}: {payments.join(" · ")}
+          </span>
         </Container>
       </div>
     </footer>

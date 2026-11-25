@@ -31,6 +31,7 @@ export const paymentToDb = {
   nagad: "NAGAD",
   rocket: "ROCKET",
   card: "CARD",
+  qr: "QR",
 } as const satisfies Record<PaymentMethod, DbPayment>;
 
 type QuoteLine = {

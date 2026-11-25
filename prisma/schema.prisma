@@ -114,6 +114,10 @@ enum PaymentMethod {
   NAGAD
   ROCKET
   CARD
+  // Manual payment to the store's QR code: the shopper submits their
+  // number and transaction ID (kept on Payment.gatewayRef/payload) and an
+  // admin verifies it before confirming the order.
+  QR
 }
 
 enum PaymentStatus {

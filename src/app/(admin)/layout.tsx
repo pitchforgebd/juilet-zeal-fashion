@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function AdminRootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${fontVariables} h-full`}>
+    <html lang="en" className={`${fontVariables} h-full`} data-scroll-behavior="smooth">
       <body className="min-h-full bg-page font-sans text-foreground antialiased">
         {children}
         <ToastStack regionLabel="Notifications" dismissLabel="Dismiss" />

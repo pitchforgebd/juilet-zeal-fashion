@@ -35,18 +35,17 @@ type SiteConfig = {
 };
 
 export const siteConfig: SiteConfig = {
-  name: "UniBaazar",
+  name: "Juliet's Zeal",
   description:
-    "Shop fashion, electronics, and daily essentials with delivery across Bangladesh.",
+    "Juliet's Zeal Fashion House — considered clothing, quietly luxurious, delivered across Bangladesh.",
   freeShippingThreshold: 6500,
   contact: {
     phoneDisplay: "01700-000000",
     phoneHref: "tel:+8801700000000",
-    email: "hello@unibaazar.com",
+    email: "hello@julietszealfashionhouse.com",
     address: "Dhaka, Bangladesh",
   },
   topBarLinks: [
-    { id: "newsletter", label: "Newsletter", href: "#newsletter" },
     { id: "trackOrder", label: "Track Order", href: "/track-order" },
     { id: "login", label: "Login / Register", href: "/login" },
     { id: "help", label: "Help & Support", href: "/contact-us" },
@@ -84,6 +83,6 @@ export const siteConfig: SiteConfig = {
   ],
   chat: {
     whatsapp: "https://wa.me/8801700000000",
-    messenger: "https://m.me/unibaazar",
+    messenger: "https://m.me/julietszealfashionhouse",
   },
 };

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact & Complain Box — NOORA</title>
+<meta name="description" content="Questions, feedback or a complaint? Reach our team any day of the week.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Noto+Sans+Bengali:wght@400;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.classList.add('js')</script>
+</head>
+<body>
+<!-- ============ SVG SPRITES ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <!-- icons -->
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.5-9-9.2C1.8 7.5 3.7 4 7 4c2 0 3.7 1.2 5 3 1.3-1.8 3-3 5-3 3.3 0 5.2 3.500 4 6.800C19 15.500 12 20 12 20z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+  <symbol id="i-truck" viewBox="0 0 24 24"><path d="M2 6h12v10H2zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.500" r="2"/><circle cx="17" cy="17.500" r="2"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.500 8-8 9-4.500-1-8-4-8-9V6l8-3z"/><path d="M8.500 12l2.500 2.500 4.500-5"/></symbol>
+  <symbol id="i-return" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 3-6.200"/><path d="M4 4v5h5"/></symbol>
+  <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.200 7-12a7 7 0 1 0-14 0c0 5.800 7 12 7 12z"/><circle cx="12" cy="10" r="2.500"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3l2.800 5.800 6.200.9-4.500 4.400 1 6.200L12 17.300 6.500 20.300l1-6.200L3 9.700l6.200-.9z"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v3H7v4h3v6h4v-6h3l1-4h-4V8z"/></symbol>
+  <symbol id="i-ig" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.500" cy="6.500" r=".6"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="M10 9l5 3-5 3z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.200-4A8 8 0 1 1 8 19z"/><path d="M9 9c0 3 3 6 6 6l1-2-2-1-1 .8c-1-.4-2-1.400-2.400-2.400L11 9.500 10 7.500z"/></symbol>
+  <!-- logo -->
+  <symbol id="logo" viewBox="0 0 40 40"><path d="M7 37V18C7 10 12.500 3.500 20 3.500S33 10 33 18v19" fill="none" stroke="currentColor" stroke-width="2.200"/><path d="M24.500 14a7.500 7.500 0 1 0 0 12.500 6 6 0 0 1 0-12.500z" fill="currentColor"/><circle cx="26.500" cy="17" r="1.400" fill="currentColor"/></symbol>
+
+  <!-- garments (100 x 120) -->
+  <symbol id="g-tshirt" viewBox="0 0 100 120"><path d="M32 12 L8 26 L17 48 L29 42 L29 106 Q29 110 33 110 H67 Q71 110 71 106 L71 42 L83 48 L92 26 L68 12 Q62 22 50 22 Q38 22 32 12 Z" fill="currentColor"/><path d="M32 12 Q38 22 50 22 Q62 22 68 12" fill="none" stroke="#000" stroke-opacity=".25" stroke-width="2"/><path d="M29 42 L17 48 M71 42 L83 48" stroke="#000" stroke-opacity=".14" stroke-width="1.500"/><path d="M29 99 H71" stroke="#000" stroke-opacity=".12" stroke-width="1.500"/><path d="M29 42 V106 Q29 110 33 110 H45 V42Z" fill="#fff" fill-opacity=".07"/></symbol>
+  <symbol id="g-polo" viewBox="0 0 100 120"><path d="M32 12 L8 26 L17 48 L29 42 L29 106 Q29 110 33 110 H67 Q71 110 71 106 L71 42 L83 48 L92 26 L68 12 Q62 22 50 22 Q38 22 32 12 Z" fill="currentColor"/><path d="M38 10 L50 30 L62 10 L68 13 L56 32 L44 32 L32 13 Z" fill="#fff" fill-opacity=".28" stroke="#000" stroke-opacity=".2" stroke-width="1"/><path d="M50 30 V56" stroke="#000" stroke-opacity=".3" stroke-width="1.500"/><circle cx="53" cy="38" r="1.500" fill="#000" fill-opacity=".35"/><circle cx="53" cy="47" r="1.500" fill="#000" fill-opacity=".35"/><path d="M29 42 V106 Q29 110 33 110 H45 V42Z" fill="#fff" fill-opacity=".07"/></symbol>
+  <symbol id="g-panjabi" viewBox="0 0 100 120"><path d="M33 8 L9 22 L16 56 L28 50 L26 112 Q26 114 29 114 H71 Q74 114 74 112 L72 50 L84 56 L91 22 L67 8 Q62 15 50 15 Q38 15 33 8 Z" fill="currentColor"/><path d="M40 9 Q50 18 60 9 L60 13 Q50 22 40 13 Z" fill="#000" fill-opacity=".18"/><path d="M50 18 V68" stroke="#000" stroke-opacity=".28" stroke-width="1.500"/><circle cx="50" cy="28" r="1.600" fill="#fff" fill-opacity=".8"/><circle cx="50" cy="40" r="1.600" fill="#fff" fill-opacity=".8"/><circle cx="50" cy="52" r="1.600" fill="#fff" fill-opacity=".8"/><path d="M28 50 L26 112 M72 50 L74 112" stroke="#000" stroke-opacity=".1" stroke-width="1.500"/><path d="M26 112 L28 50 L45 50 L45 114 H29Z" fill="#fff" fill-opacity=".07"/></symbol>
+  <symbol id="g-thobe" viewBox="0 0 100 120"><path d="M34 6 L10 20 L14 58 L27 52 L25 116 H75 L73 52 L86 58 L90 20 L66 6 Q60 12 50 12 Q40 12 34 6 Z" fill="currentColor"/><path d="M42 7 Q50 15 58 7 L58 11 Q50 19 42 11Z" fill="#000" fill-opacity=".16"/><path d="M50 15 V62" stroke="#000" stroke-opacity=".25" stroke-width="1.500"/><path d="M60 72 H68 V86" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="1.300"/><path d="M25 116 L27 52 L45 52 L45 116Z" fill="#fff" fill-opacity=".1"/></symbol>
+  <symbol id="g-jacket" viewBox="0 0 100 120"><path d="M31 10 L7 26 L10 88 L25 86 L25 110 Q25 112 28 112 H72 Q75 112 75 110 L75 86 L90 88 L93 26 L69 10 L61 17 L50 13 L39 17 Z" fill="currentColor"/><path d="M39 17 L50 13 L61 17 L61 10 L69 10 L61 4 L50 8 L39 4 L31 10 L39 10Z" fill="#000" fill-opacity=".2"/><path d="M50 13 V112" stroke="#ead9ac" stroke-width="1.600" stroke-dasharray="2.500 2"/><path d="M30 92 H42 M58 92 H70" stroke="#000" stroke-opacity=".3" stroke-width="2" stroke-linecap="round"/><path d="M10 80 L25 78 M90 80 L75 78" stroke="#000" stroke-opacity=".25" stroke-width="2"/><path d="M25 86 V112 H45 V14 L39 17 L31 10 L7 26 L10 88Z" fill="#fff" fill-opacity=".08"/></symbol>
+  <symbol id="g-trouser" viewBox="0 0 100 120"><path d="M30 6 H70 L76 112 Q76 114 73 114 H56 Q54 114 54 112 L50 44 L46 112 Q46 114 44 114 H27 Q24 114 24 112 Z" fill="currentColor"/><path d="M30 15 H70" stroke="#000" stroke-opacity=".25" stroke-width="1.500"/><path d="M46 6 V22 M54 6 V22" stroke="#ead9ac" stroke-width="1.300" stroke-linecap="round"/><path d="M24 112 L30 6 H50 V44 L46 112 Q46 114 44 114 H27 Q24 114 24 112Z" fill="#fff" fill-opacity=".08"/></symbol>
+  <symbol id="g-sneaker" viewBox="0 0 100 120"><path d="M6 76 C6 66 14 62 22 60 L36 46 C40 42 46 44 48 48 L52 56 L74 64 C88 68 96 72 96 82 V90 H6 Z" fill="currentColor"/><path d="M4 90 H98 V98 Q98 100 96 100 H6 Q4 100 4 98 Z" fill="#f5f1e8"/><path d="M38 52 L44 58 M44 47 L50 54 M52 60 L58 66" stroke="#fff" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/><path d="M6 76 H96" stroke="#000" stroke-opacity=".15" stroke-width="1.500"/></symbol>
+  <symbol id="g-attar" viewBox="0 0 100 120"><path d="M30 46 Q30 42 34 42 H66 Q70 42 70 46 V104 Q70 110 64 110 H36 Q30 110 30 104 Z" fill="currentColor" fill-opacity=".9"/><path d="M44 30 H56 V42 H44Z" fill="#ead9ac"/><path d="M40 12 Q40 8 44 8 H56 Q60 8 60 12 V30 H40Z" fill="#c8a45d"/><rect x="36" y="58" width="28" height="34" rx="3" fill="#fff" fill-opacity=".85"/><path d="M42 68 H58 M42 75 H58 M42 82 H52" stroke="#0a1322" stroke-opacity=".5" stroke-width="1.500" stroke-linecap="round"/><path d="M34 46 V104 H42 V46Z" fill="#fff" fill-opacity=".18"/></symbol>
+  <symbol id="g-combo" viewBox="0 0 100 120"><use href="#g-tshirt" x="0" y="38" width="48" height="58" style="color:var(--c1)"/><use href="#g-tshirt" x="52" y="38" width="48" height="58" style="color:var(--c3)"/><use href="#g-tshirt" x="25" y="16" width="50" height="60" style="color:var(--c2)"/></symbol>
+</svg>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <div class="wrap">
+    <a href="showrooms.html"><svg class="i"><use href="#i-pin"/></svg>Store Locations</a>
+    <span class="mid">FREE DELIVERY OVER ৳3,000 · CASH ON DELIVERY</span>
+    <div class="r"><span><svg class="i"><use href="#i-phone"/></svg>+880 1XXX-XXXXXX</span><span>BDT ৳ · EN</span></div>
+  </div>
+</div>
+
+<header class="hdr" id="hdr">
+  <div class="scrim" id="scrim"></div>
+  <div class="wrap">
+    <div class="hdr-main">
+      <button class="nav-toggle" id="navT" aria-label="Open menu" aria-expanded="false" aria-controls="nav"><svg class="i"><use href="#i-menu"/></svg></button>
+      <a href="index.html" class="logo" aria-label="NOORA home">
+        <svg><use href="#logo"/></svg>
+        <div><b>NOORA</b><small>Islamic Lifestyle</small></div>
+      </a>
+      <div class="sw">
+        <form class="search" action="shop.html" method="get">
+          <label class="sr" for="q">Search</label>
+          <input id="q" name="q" type="search" placeholder="Search panjabi, thobe, jacket, attar…" autocomplete="off">
+          <button aria-label="Search"><svg class="i"><use href="#i-search"/></svg></button>
+        </form>
+        <div class="sug" id="sug">
+          <div class="st">Trending searches</div>
+          <div class="sc"><a href="shop.html?q=Panjabi" data-q="Panjabi">Panjabi</a><a href="shop.html?q=Thobe" data-q="Thobe">Thobe</a><a href="shop.html?q=Padded+jacket" data-q="Padded jacket">Padded jacket</a><a href="shop.html?q=Oud+attar" data-q="Oud attar">Oud attar</a><a href="shop.html?q=Combo+offer" data-q="Combo offer">Combo offer</a><a href="shop.html?q=Polo+shirt" data-q="Polo shirt">Polo shirt</a></div>
+          <div class="st">Popular categories</div>
+          <div class="sl"><a href="shop.html?type=panjabi">Panjabi & Thobe <span>→</span></a><a href="shop.html?type=jacket">Jackets <span>→</span></a><a href="shop.html?type=attar">Attar & Perfume <span>→</span></a><a href="shop.html?type=combo">Combo Offers <span>→</span></a></div>
+        </div>
+      </div>
+      <div class="acts">
+        <a href="account.html" class="act act-u"><svg class="i"><use href="#i-user"/></svg><span class="t">Sign In<b>My Account</b></span></a>
+        <a href="wishlist.html" class="act act-w" aria-label="Wishlist"><svg class="i"><use href="#i-heart"/></svg><span class="badge wc">0</span></a>
+        <a href="cart.html" class="act" aria-label="Cart"><svg class="i"><use href="#i-bag"/></svg><span class="badge cc">0</span></a>
+      </div>
+    </div>
+    <ul class="nav" id="nav" aria-label="Main menu"></ul>
+  </div>
+</header>
+<main id="main">
+<section class="phead"><div class="wrap">
+  <nav class="crumb"><a href="index.html">Home</a><span>/</span><b>Contact</b></nav>
+  <h1>We'd love to <em>hear from you</em></h1>
+  <p>Questions, feedback or a problem with an order? Our team replies fast.</p>
+</div></section>
+
+<section class="pad" style="padding-top:44px"><div class="wrap ct-grid">
+  <div class="cinfo">
+    <div class="ci"><div class="ic"><svg class="i"><use href="#i-phone"/></svg></div><div><b>Call us</b><span>+880 1XXX-XXXXXX<br>Every day, 10:00 AM – 10:00 PM</span></div></div>
+    <div class="ci"><div class="ic"><svg class="i"><use href="#i-wa"/></svg></div><div><b>WhatsApp</b><span>+880 1XXX-XXXXXX<br>Quick replies on orders and sizes</span></div></div>
+    <div class="ci"><div class="ic"><svg class="i"><use href="#i-mail"/></svg></div><div><b>Email</b><span>hello@yourbrand.com<br>We reply within 24 hours</span></div></div>
+    <div class="ci"><div class="ic"><svg class="i"><use href="#i-pin"/></svg></div><div><b>Head office</b><span>Shop-00, Your Plaza, Main Road,<br>Dhaka, Bangladesh</span></div></div>
+  </div>
+  <div class="panel">
+    <h2>Complain Box <span class="bn">অভিযোগ বাক্স</span></h2>
+    <form id="cForm" novalidate>
+      <div class="row2">
+        <div class="fld" id="c-name"><label for="cn">Your name <i>*</i></label><input id="cn" placeholder="Full name"><div class="err">Please enter your name.</div></div>
+        <div class="fld" id="c-ph"><label for="cp">Mobile number <i>*</i></label><input id="cp" type="tel" inputmode="numeric" maxlength="11" placeholder="01XXXXXXXXX"><div class="err">Enter a valid 11-digit number.</div></div>
+      </div>
+      <div class="row2">
+        <div class="fld"><label for="ct">Topic</label><select id="ct"><option>Order issue</option><option>Product quality</option><option>Delivery problem</option><option>Exchange / return</option><option>Suggestion</option><option>Wholesale / business</option></select></div>
+        <div class="fld"><label for="co">Order number <span class="bn">(if any)</span></label><input id="co" placeholder="e.g. NR-100245"></div>
+      </div>
+      <div class="fld" id="c-msg"><label for="cm">Message <i>*</i></label><textarea id="cm" placeholder="Tell us what happened or how we can help"></textarea><div class="err">Please write at least 10 characters.</div></div>
+      <button class="btn gold" type="submit">Send message <svg class="i"><use href="#i-arrow"/></svg></button>
+    </form>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap" style="max-width:860px">
+  <div class="sh reveal"><div><div class="k">Quick answers</div><h2>Frequently asked <em>questions</em></h2></div></div>
+  <div class="faq reveal">
+    <details open><summary>How long does delivery take?</summary><p>1–2 working days inside Dhaka and 3–7 working days for the rest of Bangladesh, insha'Allah.</p></details>
+    <details><summary>Do you offer cash on delivery?</summary><p>Yes, cash on delivery is available all over Bangladesh. bKash and Nagad are also accepted.</p></details>
+    <details><summary>What if my size doesn't fit?</summary><p>Contact us within 3 days of delivery and we will arrange an exchange. Items must be unused with tags intact.</p></details>
+    <details><summary>Can I change or cancel my order?</summary><p>Call us as soon as possible. Orders can be changed or cancelled before they are shipped.</p></details>
+    <details><summary>Are the product colours accurate?</summary><p>We photograph every product carefully, but colours may look slightly different because of lighting and screen settings.</p></details>
+  </div>
+</div></section>
+</main>
+<!-- ============ NEWSLETTER ============ -->
+<section class="news"><div class="wrap">
+  <div class="box reveal">
+    <div><h2>Get 10% off your first order</h2><p>Join our circle for new drops, private sales and style notes. No spam — ever.</p></div>
+    <div>
+      <form class="nf" id="nf"><input type="email" required placeholder="Your email address" aria-label="Email"><button type="submit">Subscribe</button></form>
+      <div class="nmsg" id="nmsg"></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="f-grid">
+      <div class="f-brand">
+        <a href="index.html" class="logo"><svg><use href="#logo"/></svg><div><b>NOORA</b><small>Islamic Lifestyle</small></div></a>
+        <p>Modest fashion and lifestyle essentials, designed with intention for the modern believer.</p>
+        <div class="soc">
+          <a href="#" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
+          <a href="#" aria-label="Instagram"><svg class="i"><use href="#i-ig"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg class="i"><use href="#i-yt"/></svg></a>
+          <a href="#" aria-label="WhatsApp"><svg class="i"><use href="#i-wa"/></svg></a>
+        </div>
+      </div>
+      <div class="f-col"><h5>Shop</h5><ul><li><a href="shop.html?sort=new">New Arrivals</a></li><li><a href="shop.html?type=panjabi">Panjabi & Thobe</a></li><li><a href="shop.html?type=jacket">Jackets</a></li><li><a href="shop.html?type=attar">Attar & Perfume</a></li><li><a href="shop.html?type=combo">Combo Offers</a></li></ul></div>
+      <div class="f-col"><h5>Account</h5><ul><li><a href="account.html">My Account</a></li><li><a href="track-order.html">Track My Order</a></li><li><a href="affiliate.html">Join as Affiliate</a></li><li><a href="contact.html">Complain Box</a></li></ul></div>
+      <div class="f-col"><h5>Information</h5><ul><li><a href="showrooms.html">Our Showrooms</a></li><li><a href="policy.html#refund">Refund & Return</a></li><li><a href="about.html">About Us</a></li><li><a href="policy.html#privacy">Privacy Policy</a></li><li><a href="policy.html#terms">Terms & Conditions</a></li></ul></div>
+      <div class="f-col f-contact">
+        <h5>Talk to Us</h5>
+        <div style="font-size:14px">Got questions? Call us</div>
+        <div class="big">+880 1XXX-XXXXXX</div>
+        <div class="r"><svg class="i"><use href="#i-mail"/></svg><a href="contact.html">hello@yourbrand.com</a></div>
+        <div class="r"><svg class="i"><use href="#i-pin"/></svg><span>Shop-00, Your Plaza,<br>Dhaka, Bangladesh</span></div>
+      </div>
+    </div>
+    <div class="pay">
+      <span class="lbl">Secure payments</span>
+      <div class="chips"><span>Cash on Delivery</span><span>bKash</span><span>Nagad</span><span>Visa</span><span>Mastercard</span></div>
+    </div>
+    <div class="copy">
+      <span>© <span id="yr">2026</span> NOORA. All rights reserved.</span>
+      <nav><a href="policy.html#privacy">Privacy</a><a href="policy.html#terms">Terms</a><a href="policy.html#refund">Refund</a></nav>
+    </div>
+  </div>
+  <div class="wm" aria-hidden="true">NOORA</div>
+</footer>
+
+<button class="top" id="top" aria-label="Back to top"><svg class="i"><use href="#i-arrow"/></svg></button>
+<div class="toast" id="toast"><svg class="i"><use href="#i-check"/></svg><span>Added to cart</span></div>
+<nav class="tabbar" aria-label="Quick navigation">
+  <a href="index.html"><svg class="i"><use href="#i-home"/></svg>Home</a>
+  <button type="button" id="tabShop"><svg class="i"><use href="#i-grid"/></svg>Shop</button>
+  <a href="wishlist.html"><svg class="i"><use href="#i-heart"/></svg>Wishlist<span class="badge wc">0</span></a>
+  <a href="cart.html"><svg class="i"><use href="#i-bag"/></svg>Cart<span class="badge cc">0</span></a>
+  <a href="account.html"><svg class="i"><use href="#i-user"/></svg>Account</a>
+</nav>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+(function(){
+  function bad(id,on){$(id).classList.toggle('bad',on)}
+  $('#cp').oninput=function(){this.value=this.value.replace(/\D/g,'')};
+  $('#cForm').onsubmit=function(e){
+    e.preventDefault();
+    var a=$('#cn').value.trim().length>=3,b=/^01[3-9]\d{8}$/.test($('#cp').value),c=$('#cm').value.trim().length>=10;
+    bad('#c-name',!a);bad('#c-ph',!b);bad('#c-msg',!c);
+    if(!(a&&b&&c))return;
+    var all=Store.get('messages',[]);all.push({n:$('#cn').value,p:$('#cp').value,t:$('#ct').value,o:$('#co').value,m:$('#cm').value,d:Date.now()});Store.set('messages',all);
+    this.reset();toast('Message sent. We will contact you soon.');
+  };
+})();
+</script>
+</body>
+</html>

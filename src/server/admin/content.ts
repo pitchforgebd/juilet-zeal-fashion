@@ -2,29 +2,13 @@ import type { PublishStatus } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { recordAudit } from "@/server/security/audit";
 import { findSeo } from "@/server/seo/public";
+import {
+  isHomeSectionKey,
+  mergeHomeSections,
+  type HomeSectionRow,
+} from "@/lib/content/homeSections";
 
-export const homeDefaults = [
-  { key: "hero", title: "Hero" },
-  { key: "categories", title: "Categories" },
-  { key: "flash", title: "Flash sale" },
-  { key: "offers", title: "Offers" },
-  { key: "featured", title: "Featured" },
-  { key: "recent", title: "Recent" },
-  { key: "bestsellers", title: "Best sellers" },
-  { key: "trust", title: "Trust" },
-  { key: "testimonials", title: "Testimonials" },
-  { key: "videos", title: "Videos" },
-  { key: "instagram", title: "Instagram" },
-  { key: "blog", title: "Blog" },
-] as const;
-
-export type HomeSectionRow = {
-  key: string;
-  title: string;
-  enabled: boolean;
-  sortOrder: number;
-  target: string;
-};
+export type { HomeSectionRow } from "@/lib/content/homeSections";
 
 async function saveSeo(
   entityType: "PAGE" | "BLOG_POST",
@@ -411,42 +395,15 @@ export async function allPublishedHomeVideos() {
 
 export async function listHomeSections(): Promise<HomeSectionRow[]> {
   const rows = await prisma.homeSection.findMany({ orderBy: { sortOrder: "asc" } });
-  if (rows.length === 0) {
-    return homeDefaults.map((row, index) => ({
-      key: row.key,
-      title: row.title,
-      enabled: row.key !== "instagram",
-      sortOrder: index,
-      target: "",
-    }));
-  }
-  const mapped = rows.map((row) => ({
-    key: row.key,
-    title: row.title,
-    enabled: row.enabled,
-    sortOrder: row.sortOrder,
-    target: row.target,
-  }));
-  const present = new Set(mapped.map((row) => row.key));
-  const extras = homeDefaults
-    .filter((row) => !present.has(row.key))
-    .map((row, index) => ({
-      key: row.key,
-      title: row.title,
-      enabled: row.key !== "instagram",
-      sortOrder: mapped.length + index,
-      target: "",
-    }));
-  return [...mapped, ...extras];
+  return mergeHomeSections(rows);
 }
 
 export async function saveHomeSections(
   actorId: string,
   sections: { key: string; title: string; enabled: boolean; target: string }[],
 ): Promise<string> {
-  const known = new Set(homeDefaults.map((row) => row.key));
   for (const [index, section] of sections.entries()) {
-    if (!known.has(section.key as (typeof homeDefaults)[number]["key"])) {
+    if (!isHomeSectionKey(section.key)) {
       throw new Error("Unknown homepage section");
     }
     await prisma.homeSection.upsert({

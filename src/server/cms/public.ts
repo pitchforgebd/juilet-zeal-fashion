@@ -79,6 +79,18 @@ export async function publicMenu(location: string) {
   };
 }
 
+/** A menu's links for rendering, or [] when that menu doesn't exist, is
+ * switched off or has no items — callers fall back to their built-in links. */
+export async function menuLinks(
+  location: string,
+): Promise<{ label: string; href: string }[]> {
+  const menu = await prisma.menu.findFirst({
+    where: { location, isActive: true },
+    include: { items: { orderBy: { sortOrder: "asc" } } },
+  });
+  return menu?.items.map((item) => ({ label: item.label, href: item.href })) ?? [];
+}
+
 export async function publicSettings() {
   const rows = await prisma.setting.findMany({
     where: { isSecret: false },

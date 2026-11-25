@@ -20,6 +20,8 @@ const messageKeys: Record<string, string> = {
   "Confirm the new password": "confirmNewPassword",
   "Enter a name": "addressName",
   "Enter the full address": "addressLine1",
+  "Enter the number you paid from": "qrPayerNumber",
+  "Enter the transaction ID from your payment": "qrTransactionId",
 };
 
 export function translatedError(

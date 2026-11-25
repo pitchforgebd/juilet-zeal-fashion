@@ -78,6 +78,23 @@ export function OrderPaymentPanel({ order }: { order: AdminOrderDetail }) {
     <div className="space-y-4">
       <div className="rounded-theme bg-card p-4 shadow-soft">
         <h2 className="font-heading font-semibold text-ink">Payment</h2>
+        {order.paymentProof ? (
+          <div className="mt-3 rounded-theme border border-ink/10 bg-page p-3 text-sm">
+            <p className="font-medium text-ink">QR payment submitted by the customer</p>
+            <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
+              <dt className="text-muted">Paid from</dt>
+              <dd className="text-ink tabular-nums">{order.paymentProof.payerNumber}</dd>
+              <dt className="text-muted">Transaction ID</dt>
+              <dd className="font-mono text-ink">{order.paymentProof.transactionId}</dd>
+              <dt className="text-muted">Amount due</dt>
+              <dd className="text-ink tabular-nums">{formatTaka(order.paymentAmount)}</dd>
+            </dl>
+            <p className="mt-2 text-muted">
+              Check this against your payment statement, then set the payment to Paid and
+              confirm the order. If it doesn&apos;t match, set it to Failed.
+            </p>
+          </div>
+        ) : null}
         <div className="mt-3 flex flex-wrap items-end gap-2">
           <Select
             label="Payment status"

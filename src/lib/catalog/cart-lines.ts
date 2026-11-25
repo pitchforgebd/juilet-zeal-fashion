@@ -31,6 +31,29 @@ export function resolveCartLines(
   });
 }
 
+/**
+ * Cart lines that can never be bought again: the product was deleted (the API
+ * answered 404 — see useResolvedProducts' `gone`), or it still exists but the
+ * saved variant doesn't. A product that merely hasn't loaded yet, or whose
+ * request failed, is never dead — it's retried instead.
+ */
+export function deadCartLines(
+  lines: CartLine[],
+  catalog: Map<string, Product>,
+  gone: string[],
+): CartLine[] {
+  const goneSlugs = new Set(gone);
+  return lines.filter((line) => {
+    if (goneSlugs.has(line.slug)) {
+      return true;
+    }
+    const product = catalog.get(line.slug);
+    return (
+      product !== undefined && !product.variants.some((v) => v.id === line.variantId)
+    );
+  });
+}
+
 /** `discount` is the server-validated coupon discount for the current lines
  * (see `useCartStore.applyCoupon`/`refreshCoupon`) — never recomputed from a
  * client-side coupon table, so the preview always matches what checkout will

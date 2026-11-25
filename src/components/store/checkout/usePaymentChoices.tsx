@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { Banknote, CreditCard, Smartphone } from "lucide-react";
+import { Banknote, QrCode, ShieldCheck } from "lucide-react";
 import type { PaymentMethod } from "@/types/catalog";
 
 export type PaymentChoice = {
@@ -12,40 +12,51 @@ export type PaymentChoice = {
 
 const iconClass = "size-5";
 
-/** Display data (label, one-line hint, icon) for each checkout payment method. */
-export function usePaymentChoices(): PaymentChoice[] {
+/**
+ * The checkout payment choices, each switched on independently by the
+ * admin, so any combination (or all three) can show:
+ * - cash on delivery (Admin → Settings → Checkout);
+ * - pay online — submits as `card`, which the server routes to the
+ *   SSLCommerz gateway, whose hosted page offers bKash, Nagad, Rocket and
+ *   cards (on once its keys are saved in Admin → Settings → Integrations);
+ * - pay by QR code — the shopper pays the store's QR and submits their
+ *   number and transaction ID for an admin to verify (Admin → Settings →
+ *   Checkout).
+ */
+export function usePaymentChoices({
+  cod,
+  online,
+  qr,
+}: {
+  cod: boolean;
+  online: boolean;
+  qr: boolean;
+}): PaymentChoice[] {
   const t = useTranslations("checkout");
-  const wallet = (name: string) => t("paymentWalletHint", { name });
-  return [
-    {
+  const choices: PaymentChoice[] = [];
+  if (cod) {
+    choices.push({
       value: "cod",
       label: t("paymentCod"),
       hint: t("paymentCodHint"),
       icon: <Banknote className={iconClass} />,
-    },
-    {
-      value: "bkash",
-      label: t("paymentBkash"),
-      hint: wallet(t("paymentBkash")),
-      icon: <Smartphone className={iconClass} />,
-    },
-    {
-      value: "nagad",
-      label: t("paymentNagad"),
-      hint: wallet(t("paymentNagad")),
-      icon: <Smartphone className={iconClass} />,
-    },
-    {
-      value: "rocket",
-      label: t("paymentRocket"),
-      hint: wallet(t("paymentRocket")),
-      icon: <Smartphone className={iconClass} />,
-    },
-    {
+    });
+  }
+  if (online) {
+    choices.push({
       value: "card",
-      label: t("paymentCard"),
-      hint: t("paymentCardHint"),
-      icon: <CreditCard className={iconClass} />,
-    },
-  ];
+      label: t("paymentOnline"),
+      hint: t("paymentOnlineHint"),
+      icon: <ShieldCheck className={iconClass} />,
+    });
+  }
+  if (qr) {
+    choices.push({
+      value: "qr",
+      label: t("paymentQr"),
+      hint: t("paymentQrHint"),
+      icon: <QrCode className={iconClass} />,
+    });
+  }
+  return choices;
 }

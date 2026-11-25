@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { areaLabel, orderStatusVariant, prettyStatus } from "./labels";
+import { areaLabel, orderStatusVariant, paymentLabel, prettyStatus } from "./labels";
 import { Badge } from "@/components/ui/Badge";
 import { buttonStyles } from "@/components/ui/buttonStyles";
 import { formatTaka } from "@/lib/utils/currency";
@@ -58,7 +58,7 @@ export function OrderDetail({ order }: { order: AdminOrderDetail }) {
           {order.email ? <p className="text-sm text-muted">{order.email}</p> : null}
           <p className="mt-2 text-sm text-ink">{order.address}</p>
           <p className="text-sm text-muted">
-            {areaLabel(order.area)} · {prettyStatus(order.paymentMethod)} ·{" "}
+            {areaLabel(order.area)} · {paymentLabel(order.paymentMethod)} ·{" "}
             {formatTaka(order.total)}
           </p>
           {order.blacklisted ? (

@@ -62,4 +62,18 @@ export const playfairDisplay = localFont({
   display: "swap",
 });
 
-export const fontVariables = `${poppins.variable} ${notoSansBengali.variable} ${playfairDisplay.variable}`;
+// Juliet's Zeal's brand face — a minimal geometric sans used for both
+// headings and body copy. One variable file covers the 300–600 range.
+export const jost = localFont({
+  src: [
+    {
+      path: "./files/jost-variable.woff2",
+      weight: "300 600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-jost",
+  display: "swap",
+});
+
+export const fontVariables = `${jost.variable} ${poppins.variable} ${notoSansBengali.variable} ${playfairDisplay.variable}`;

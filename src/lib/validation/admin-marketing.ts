@@ -40,17 +40,6 @@ export const flashSchema = z.object({
   isActive: z.boolean(),
 });
 
-export const bannerSchema = z.object({
-  id: optionalId,
-  title: z.string().trim().min(1, "Enter a title").max(191),
-  subtitle: z.string().trim().max(500),
-  href: z.string().trim().min(1, "Enter a link").max(500),
-  imageUrl: z.string().trim().max(500).optional().default(""),
-  placement: z.enum(["home", "category", "popup", "exit"]),
-  sortOrder: whole,
-  isActive: z.boolean(),
-});
-
 export const sliderSchema = z.object({
   id: optionalId,
   title: z.string().trim().min(1, "Enter a title").max(191),
