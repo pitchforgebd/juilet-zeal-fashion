@@ -38,6 +38,9 @@ jobs:
     needs: find-ci-run
     runs-on: ubuntu-latest
     environment: production
+    permissions:
+      actions: read # download the artifact built by ci.yml
+      contents: write # publish/remove the temporary release the host fetches
     steps:
       - name: Ensure the release/shared directories exist
         uses: appleboy/ssh-action@v1.2.0
@@ -71,17 +74,55 @@ jobs:
           name: release-${{ inputs.sha }}
           path: artifact
 
-      - name: Upload artifact to the host
-        uses: appleboy/scp-action@v0.1.7
+      # The release file reaches the host by the host *downloading* it, not by
+      # the runner pushing it over scp: on this cPanel host (jailshell) the scp
+      # session was closed immediately ("remote command exited without exit
+      # status"), while ordinary SSH commands work fine. The repo is public, so
+      # the file is published as a short-lived GitHub Release, fetched with
+      # curl, checked against a SHA-256 computed here, and the release is
+      # deleted again at the end of the job (see the last step). It holds only
+      # build output built from this public repo — no .env, no secrets.
+      - name: Publish the release file temporarily
+        id: publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          tag="deploy-${{ inputs.sha }}"
+          # A previous failed run may have left one behind.
+          gh release delete "$tag" --cleanup-tag --yes --repo "${{ github.repository }}" 2>/dev/null || true
+          gh release create "$tag" artifact/release.tar.gz \
+            --repo "${{ github.repository }}" \
+            --target "${{ inputs.sha }}" \
+            --prerelease \
+            --title "Deploy ${{ inputs.sha }}" \
+            --notes "Temporary: removed automatically when the deploy finishes."
+          echo "sum=$(sha256sum artifact/release.tar.gz | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch the release on the host
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.SSH_PASSPHRASE }} # see the first step's comment
           port: ${{ secrets.SSH_PORT }}
-          source: artifact/release.tar.gz
-          target: ${{ secrets.APP_PATH }}/incoming
-          strip_components: 1
+          command_timeout: 30m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.APP_PATH }}/incoming"
+            rm -f release.tar.gz
+            URL="https://github.com/${{ github.repository }}/releases/download/deploy-${{ inputs.sha }}/release.tar.gz"
+            if command -v curl >/dev/null 2>&1; then
+              curl -fL --retry 3 --retry-delay 5 -o release.tar.gz "$URL"
+            elif command -v wget >/dev/null 2>&1; then
+              wget -q --tries=3 -O release.tar.gz "$URL"
+            else
+              echo "Neither curl nor wget is available on the host." >&2
+              exit 1
+            fi
+            echo "${{ steps.publish.outputs.sum }}  release.tar.gz" | sha256sum -c -
 
       # command_timeout defaults to 10m in appleboy/ssh-action, which the
       # first real deploy hit: the release artifact includes a full
@@ -139,3 +180,10 @@ jobs:
             export APP_PATH="${{ secrets.APP_PATH }}"
             export HEALTH_CHECK_URL="${{ secrets.HEALTH_CHECK_URL }}"
             bash "$APP_PATH/releases/$SHA/scripts/deploy/deploy-release.sh"
+
+      - name: Remove the temporary release
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release delete "deploy-${{ inputs.sha }}" --cleanup-tag --yes --repo "${{ github.repository }}" || true
