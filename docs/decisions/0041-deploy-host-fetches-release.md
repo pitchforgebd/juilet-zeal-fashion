@@ -1,4 +1,4 @@
-# 0041 — The host downloads the release; the runner no longer pushes it over scp
+# 0041 — The host downloads the release artifact; the runner no longer pushes it over scp
 
 ## Context
 
@@ -8,25 +8,29 @@ port) accepts ordinary SSH commands, so the first deploy step and every
 (0 s, not size-related) with `remote command exited without exit status or
 exit signal`: the jail closes the scp session. `scp` exists in the jail when
 used interactively, so the cause is how the host handles an scp transfer over
-a non-interactive session, not a missing binary.
+a non-interactive session.
+
+A first replacement — publishing the file as a temporary GitHub Release for
+the host to `curl` — was rejected by GitHub with `HTTP 403: Resource not
+accessible by integration` even though the job's token showed
+`Contents: write`, so it was dropped.
 
 ## Decision
 
-Replace the scp step with: (1) the runner publishes `release.tar.gz` as a
-short-lived pre-release (`deploy-<sha>`) on this repository; (2) the host
-fetches it with `curl` (or `wget`) over HTTPS and verifies a SHA-256 computed
-on the runner; (3) an `always()` step deletes the release and its tag. The
-unpack and `deploy-release.sh` steps are unchanged.
+The host downloads the CI artifact itself: a runner step looks up the
+artifact id for `release-<sha>` on the green `ci` run, and an SSH step runs
+`curl` against `api.github.com/.../actions/artifacts/<id>/zip` with the job's
+short-lived `GITHUB_TOKEN`, then `unzip`s `release.tar.gz` and checks it with
+`gzip -t`. The unpack and `deploy-release.sh` steps are unchanged. The deploy
+job needs only `actions: read`.
 
 ## Consequences
 
-- Works wherever plain SSH commands work and the host can reach github.com.
-- The repository is public, and the file is build output of that public
-  code (no `.env`, no secrets), so a minutes-long public download exposes
-  nothing new. If the repository is ever made private, the host's `curl`
-  would need an authenticated URL — revisit this then.
-- The deploy job now needs `contents: write` (publish/delete the release)
-  and `actions: read` (download the CI artifact); both are declared on the job.
-- A failed run can leave a `deploy-<sha>` release behind if the runner is
-  killed; the next run for that sha deletes it first, and it can be removed
-  by hand from the repository's Releases page.
+- Works wherever plain SSH commands work, the host can reach github.com, and
+  `curl` + `unzip` exist (both confirmed on this host).
+- Nothing is published: no temporary release, no write permission.
+- The `GITHUB_TOKEN` appears in the command run on the host for the length of
+  the download; it expires when the job ends and can only read this repo's
+  Actions artifacts. The host's jail hides other processes.
+- Artifacts expire after 14 days; the "Find the release artifact" step says
+  so plainly if the one asked for has expired — re-run `ci` for that commit.
