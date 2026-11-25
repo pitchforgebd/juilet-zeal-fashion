@@ -1,7 +1,7 @@
 #!/bin/bash
 # Manual rollback: moves an already-unpacked release into the live
 # directory and restarts the app. Run this on the cPanel host, from the
-# `~/unibaazar` directory (one level above `releases/` and `current`).
+# `~/julietszeal` directory (one level above `releases/` and `current`).
 #
 # `current` is a real directory, moved into place with `mv` — neither
 # `rsync` nor `cp -a`'s directory-copy idiom are installed on this host
@@ -52,4 +52,4 @@ echo "$SHA" >current.sha
 mkdir -p current/tmp
 touch current/tmp/restart.txt
 echo "Done. Passenger will restart the app on the next request."
-echo "Check: curl -fsS https://unibaazar.com/api/health"
+echo "Check: curl -fsS https://julietszealfashionhouse.com/api/health"

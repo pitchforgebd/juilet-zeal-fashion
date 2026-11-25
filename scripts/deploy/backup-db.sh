@@ -19,7 +19,7 @@ source "$SCRIPT_DIR/db-url.sh"
 FOLDER="${BACKUP_DIR:-$PWD/backups}"
 KEEP="${BACKUP_KEEP:-14}"
 mkdir -p "$FOLDER"
-FILE="$FOLDER/unibaazar-$(date -u +%Y-%m-%dT%H-%M-%SZ).sql"
+FILE="$FOLDER/julietszeal-$(date -u +%Y-%m-%dT%H-%M-%SZ).sql"
 
 # Written to a temp name and renamed only on success, so a failed dump never
 # leaves a truncated file that looks like a good backup.
@@ -29,7 +29,7 @@ MYSQL_PWD="$DB_PASS" mysqldump -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" \
 mv "$FILE.partial" "$FILE"
 echo "$FILE"
 
-ls -1t "$FOLDER"/unibaazar-*.sql | tail -n "+$((KEEP + 1))" | while read -r old; do
+ls -1t "$FOLDER"/julietszeal-*.sql | tail -n "+$((KEEP + 1))" | while read -r old; do
   rm -f "$old"
   echo "removed old backup: $(basename "$old")"
 done

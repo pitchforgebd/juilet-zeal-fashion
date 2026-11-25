@@ -36,8 +36,9 @@ answer.
 
 ## 3. Your home directory and app path — ✅ answered
 
-`echo ~` → `/home/unibaazer`, `whoami` → `unibaazer`. `APP_PATH` is
-therefore `/home/unibaazer/unibaazar`, used as-is in `DEPLOYMENT.md` and
+cPanel account `julietsz`, home directory `/home/julietsz` (Node.js 20–26,
+MariaDB 11.4, shared IP 115.187.19.26). `APP_PATH` is
+therefore `/home/julietsz/julietszeal`, used as-is in `DEPLOYMENT.md` and
 `docs/launch-checklist.md`.
 
 ## 4. SSH access for GitHub Actions — still open

@@ -24,7 +24,7 @@
 # historical entry once the new one is confirmed healthy — nothing is
 # ever deleted/recreated by bulk copy, only renamed.
 #
-# Required env vars: APP_PATH (e.g. /home/USER/unibaazar), SHA (the release
+# Required env vars: APP_PATH (e.g. /home/USER/julietszeal), SHA (the release
 # being deployed), HEALTH_CHECK_URL (the public /api/health URL to poll).
 # Optional: SMOKE_TEST_RETRIES (default 12), SMOKE_TEST_DELAY (default 5s).
 set -euo pipefail

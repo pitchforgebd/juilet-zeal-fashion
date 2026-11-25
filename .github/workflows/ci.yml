@@ -165,8 +165,51 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  # Production runs MariaDB 11.4 (cPanel), but the jobs above use MySQL 8.
+  # The app keeps all its settings in `Json` columns, which MariaDB stores as
+  # LONGTEXT — so this proves, on the real engine, that every migration
+  # applies, the seed runs, and the database-backed tests pass. The release
+  # artifact is only built once it's green.
+  mariadb-compat:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    services:
+      mariadb:
+        image: mariadb:11.4
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1"
+          MARIADB_DATABASE: julietszeal_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - name: Write .env.test
+        run: |
+          cat > .env.test <<EOF
+          DATABASE_URL=mysql://root@127.0.0.1:3306/julietszeal_test
+          NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3100
+          AUTH_SECRET=ci-only-secret-${{ github.run_id }}-not-for-production
+          CRON_SECRET=ci-only-cron-secret-${{ github.run_id }}
+          SETTINGS_ENCRYPTION_KEY=0152098de6c360c7d52575971e1edae428f7f059cb58acd65ebb16e43b9bc534
+          EOF
+      - run: npm run db:migrate:test
+      - run: npm run db:seed:test
+      - run: npm run test:integration
+
   build-artifact:
-    needs: verify
+    needs: [verify, mariadb-compat]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
     env:
@@ -218,7 +261,7 @@ jobs:
 
       - name: Build
         env:
-          NEXT_PUBLIC_SITE_URL: https://unibaazar.com
+          NEXT_PUBLIC_SITE_URL: https://julietszealfashionhouse.com
           DATABASE_URL: mysql://root@127.0.0.1:3306/unibaazar_build
         run: npm run build
 

@@ -1,6 +1,6 @@
-# Deploying UniBaazar to cPanel
+# Deploying Juliet's Zeal to cPanel
 
-Target: `unibaazar.com`, repo `https://github.com/pitchforgebd/unibaazar.git`,
+Target: `julietszealfashionhouse.com`, repo `https://github.com/pitchforgebd/juilet-zeal-fashion.git`,
 Node.js app on cPanel (Passenger), MySQL database on the same server.
 
 **As of Phase 1 of the v2 rebuild, there's a real CI/CD pipeline — but
@@ -30,7 +30,7 @@ if you're tempted to.
 
 ## 0. Before you start
 
-- Confirm `unibaazar.com` already points at this cPanel account.
+- Confirm `julietszealfashionhouse.com` already points at this cPanel account.
 - Confirm your cPanel plan offers **Node.js Selector / Setup Node.js App**,
   **SSH Access**, and **Terminal**.
 - Read `docs/deploy/host-facts.md` — it lists the exact commands to run on
@@ -44,7 +44,7 @@ if you're tempted to.
 cPanel → **MySQL® Databases**.
 
 1. Create a database (cPanel prefixes it with your username, e.g.
-   `pitchfor_unibaazer_db` — note the exact prefixed name).
+   `julietsz_db` — note the exact prefixed name).
 2. Create a DB user with a strong generated password
    (`openssl rand -base64 24`) — note the exact prefixed username too.
 3. Add that user to that database with **ALL PRIVILEGES**.
@@ -53,10 +53,10 @@ cPanel → **MySQL® Databases**.
 
 ## 2. Lay out the app directory (one-time, manual)
 
-The automated pipeline expects this structure under `~/unibaazar`:
+The automated pipeline expects this structure under `~/julietszeal`:
 
 ```
-~/unibaazar/
+~/julietszeal/
   releases/<git-sha>/   # one folder per deploy, created automatically
   shared/
     .env                # you create this once, by hand — never overwritten by a deploy
@@ -82,21 +82,28 @@ installed on this host, confirmed directly).
 Via Terminal:
 
 ```bash
-mkdir -p ~/unibaazar/releases ~/unibaazar/shared/uploads ~/unibaazar/shared/backups ~/unibaazar/incoming
+mkdir -p ~/julietszeal/releases ~/julietszeal/shared/uploads ~/julietszeal/shared/backups ~/julietszeal/incoming
 ```
 
 ## 3. Create `shared/.env` (one-time, manual)
 
 ```bash
-nano ~/unibaazar/shared/.env
+nano ~/julietszeal/shared/.env
 ```
 
 ```bash
-DATABASE_URL=mysql://<prefixed-user>:<password>@localhost:3306/<prefixed-db>?connection_limit=3&pool_timeout=20
-NEXT_PUBLIC_SITE_URL=https://unibaazar.com
+DATABASE_URL=mysql://julietsz_user:<db-password>@localhost:3306/julietsz_db?connection_limit=3&pool_timeout=20
+NEXT_PUBLIC_SITE_URL=https://julietszealfashionhouse.com
 AUTH_SECRET=<openssl rand -hex 32>
 CRON_SECRET=<openssl rand -hex 32>
+SETTINGS_ENCRYPTION_KEY=<openssl rand -hex 32>
 ```
+
+`SETTINGS_ENCRYPTION_KEY` is required: it encrypts the credentials saved in
+Admin → Settings (SSLCommerz, SMTP, SMS…). **Generate it once and keep a copy
+somewhere safe — if it's lost or changed, every saved credential becomes
+unreadable and has to be re-entered.** The host's database is **MariaDB 11.4**
+(not MySQL 8); CI's `mariadb-compat` job tests the migrations against it.
 
 `connection_limit=3&pool_timeout=20` matters on this host — see
 `UNIBAAZAR_V2_MASTER_PLAN.md` §3.3. Everything else in `.env.example`
@@ -122,22 +129,22 @@ Follow `docs/deploy/host-facts.md` (gathers the facts this needs) and then
 Make sure `main` has at least one successful `ci` run (every push to `main`
 triggers one automatically). Then: **Actions tab → `deploy` → Run workflow
 →** enter that commit's full SHA → **Run workflow**. Watch the `deploy` job.
-On success, `~/unibaazar/current` now points at a real release.
+On success, `~/julietszeal/current` now points at a real release.
 
 ## 6. Create the Node.js app in cPanel (one-time, manual — only after step 5)
 
 cPanel → **Setup Node.js App** → **Create Application**.
 
-| Field                    | Value               |
-| ------------------------ | ------------------- |
-| Node.js version          | 20.x                |
-| Application mode         | Production          |
-| Application root         | `unibaazar/current` |
-| Application URL          | `unibaazar.com`     |
-| Application startup file | `server.js`         |
+| Field                    | Value                         |
+| ------------------------ | ----------------------------- |
+| Node.js version          | 20.x                          |
+| Application mode         | Production                    |
+| Application root         | `julietszeal/current`         |
+| Application URL          | `julietszealfashionhouse.com` |
+| Application startup file | `server.js`                   |
 
 Click **Create**, then **Restart**, then check
-`https://unibaazar.com/api/health`. `current` is a real directory
+`https://julietszealfashionhouse.com/api/health`. `current` is a real directory
 (`scripts/deploy/deploy-release.sh` `mv`s each release into it), so
 this Application root never needs touching again after this one-time
 setup — no further cPanel UI steps for any future deploy.
@@ -149,7 +156,7 @@ path at save time instead of following it, so every later deploy kept
 serving that same first release no matter what. The fix is one-time:
 after a deploy has run with the mv-based script (which converts
 `current` from a symlink to a real directory automatically), open this
-app in cPanel, re-enter `unibaazar/current` as the Application root,
+app in cPanel, re-enter `julietszeal/current` as the Application root,
 and **Save**.
 
 **If that Edit/Save instead fails with "No such application or it's
@@ -166,25 +173,25 @@ for the full diagnosis. Recovery, via SSH/Terminal:
 # 1. Remove the broken registry entry (works even with the venv gone —
 #    destroy doesn't need to activate it, only set/rename does).
 /usr/sbin/cloudlinux-selector destroy --json --interpreter nodejs \
-  --domain unibaazar.com --app-root unibaazar/<the broken literal path>
+  --domain julietszealfashionhouse.com --app-root julietszeal/<the broken literal path>
 
 # 2. Create a fresh app straight at the real target — same field
 #    values as the table above.
 /usr/sbin/cloudlinux-selector create --json --interpreter nodejs \
-  --domain unibaazar.com --app-root unibaazar/current --app-uri / \
+  --domain julietszealfashionhouse.com --app-root julietszeal/current --app-uri / \
   --version 20 --app-mode production --startup-file server.js
 
 /usr/sbin/cloudlinux-selector restart --json --interpreter nodejs \
-  --domain unibaazar.com --app-root unibaazar/current
+  --domain julietszealfashionhouse.com --app-root julietszeal/current
 ```
 
-Then check `https://unibaazar.com/api/health` — with `current` now a
+Then check `https://julietszealfashionhouse.com/api/health` — with `current` now a
 real directory, there's nothing left for cPanel to resolve away, so
 this is a one-time recovery, not a recurring step.
 
 ## 7. SSL
 
-cPanel → **SSL/TLS Status** → run **AutoSSL** for `unibaazar.com` if not
+cPanel → **SSL/TLS Status** → run **AutoSSL** for `julietszealfashionhouse.com` if not
 already issued.
 
 ---
@@ -211,7 +218,7 @@ Automatic on a failed smoke test (above). To roll back manually to any
 earlier release:
 
 ```bash
-cd ~/unibaazar
+cd ~/julietszeal
 ls releases/              # pick a SHA
 ./releases/<any-sha>/scripts/deploy/rollback.sh <sha-to-roll-back-to>
 ```
@@ -223,22 +230,22 @@ cPanel → **Cron Jobs**. Replace `YOUR_CRON_SECRET` with the real
 
 ```bash
 # Cancel unpaid non-COD orders stuck in PENDING for over 24h — hourly
-0 * * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://unibaazar.com/api/v1/cron/cancel-unpaid-orders"
+0 * * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://julietszealfashionhouse.com/api/v1/cron/cancel-unpaid-orders"
 
 # Catch any variant that drifted below its low-stock threshold — every 30 min
-*/30 * * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://unibaazar.com/api/v1/cron/low-stock-sweep"
+*/30 * * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://julietszealfashionhouse.com/api/v1/cron/low-stock-sweep"
 
 # Sweep every payment for an amount/refund mismatch and alert if any are found — daily at 3am
-0 3 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://unibaazar.com/api/v1/cron/payment-reconciliation"
+0 3 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://julietszealfashionhouse.com/api/v1/cron/payment-reconciliation"
 
 # Email a reminder for carts quiet 2h-7d with an address on file — daily at 10am
-0 10 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://unibaazar.com/api/v1/cron/abandoned-cart"
+0 10 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://julietszealfashionhouse.com/api/v1/cron/abandoned-cart"
 
 # Retry any failed Meta/TikTok Conversions API send, capped at 5 attempts — daily at 4am
-0 4 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://unibaazar.com/api/v1/cron/retry-conversions"
+0 4 * * * curl -fsS -X POST -H "Authorization: Bearer YOUR_CRON_SECRET" "https://julietszealfashionhouse.com/api/v1/cron/retry-conversions"
 
 # Daily database backup at 2am (also runs automatically before every deploy)
-0 2 * * * cd ~/unibaazar/current && BACKUP_DIR=~/unibaazar/shared/backups bash scripts/deploy/backup-db.sh
+0 2 * * * cd ~/julietszeal/current && BACKUP_DIR=~/julietszeal/shared/backups bash scripts/deploy/backup-db.sh
 ```
 
 This list grows as later phases add more scheduled routes (stock-reservation
@@ -258,7 +265,7 @@ you add or edit from here on.
 (products, categories, brands, pages, blog, videos, product/category
 images) and is the only URL that needs submitting anywhere:
 
-- **Google Search Console** → Sitemaps → add `https://unibaazar.com/sitemap.xml`.
+- **Google Search Console** → Sitemaps → add `https://julietszealfashionhouse.com/sitemap.xml`.
 - **Bing Webmaster Tools** → Sitemaps → same URL.
 
 Deliberately not implemented: the deprecated `ResultOfSitemapPing`-style
@@ -272,7 +279,7 @@ Console already notices via the sitemap's own `lastmod` dates.
 
 ## First login and smoke test (after the very first deploy)
 
-Visit `https://unibaazar.com`.
+Visit `https://julietszealfashionhouse.com`.
 
 Admin login: phone `01700000000`, password set by `prisma/seed.ts` (check
 that file locally — **never commit the real value**, and change it
