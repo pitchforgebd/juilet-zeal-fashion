@@ -45,8 +45,8 @@ cPanel → _Security_ → _SSH Access_ → _Manage SSH Keys_ and authorized:
 passphrase is required on this host, so the GitHub secret `SSH_PASSPHRASE` is
 needed as well as `SSH_KEY`. The private key and passphrase go directly into
 GitHub's secrets UI (see `docs/deploy/github-secrets.md`) and are never
-pasted into chat. Port 22 is assumed unless cPanel's SSH Access page shows
-another.
+pasted into chat. The host does **not** use port 22 (closed, confirmed) — its SSH port is
+**57813**, so the GitHub secret `SSH_PORT` must be `57813`.
 
 Also confirmed on this host: `tar`, `mysql` and `mysqldump` exist (MariaDB
 client 11.4.14), `bash` is present, and the home volume has ~3 TB free.
